@@ -1,7 +1,9 @@
 program YaLife;
 
 uses
-  Forms;
+  Forms,
+  UI.Forms.FmBase in 'UI.Forms.FmBase.pas' {BaseForm},
+  UI.Frames.FrBase in 'UI.Frames.FrBase.pas' {BaseFrame: TFrame};
 
 {$Resource Resources.res}
 {$Resource Version.res}

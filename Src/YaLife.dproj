@@ -28,6 +28,13 @@
 			<DelphiCompile Include="YaLife.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
+			<DCCReference Include="UI.Forms.FmBase.pas">
+				<Form>BaseForm</Form>
+			</DCCReference>
+			<DCCReference Include="UI.Frames.FrBase.pas">
+				<Form>BaseFrame</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
