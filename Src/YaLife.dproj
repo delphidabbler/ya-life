@@ -35,6 +35,9 @@
 				<Form>BaseFrame</Form>
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
+			<DCCReference Include="UI.Forms.FmMain.pas">
+				<Form>MainForm</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

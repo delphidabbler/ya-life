@@ -3,7 +3,8 @@ program YaLife;
 uses
   Forms,
   UI.Forms.FmBase in 'UI.Forms.FmBase.pas' {BaseForm},
-  UI.Frames.FrBase in 'UI.Frames.FrBase.pas' {BaseFrame: TFrame};
+  UI.Frames.FrBase in 'UI.Frames.FrBase.pas' {BaseFrame: TFrame},
+  UI.Forms.FmMain in 'UI.Forms.FmMain.pas' {MainForm};
 
 {$Resource Resources.res}
 {$Resource Version.res}
@@ -13,5 +14,6 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.ModalPopupMode := pmAuto;
+  Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.
