@@ -1,2 +1,5 @@
 /* Manifest file */
 1 24 "Assets/YaLife.manifest"
+
+/* Main program icon */
+MAINICON ICON "Assets/MainIcon.ico"
