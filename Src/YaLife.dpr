@@ -4,6 +4,7 @@ uses
   Forms;
 
 {$Resource Resources.res}
+{$Resource Version.res}
 
 begin
   ReportMemoryLeaksOnShutdown := DebugHook <> 0;
