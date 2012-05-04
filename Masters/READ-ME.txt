@@ -1,0 +1,35 @@
+The purpose of the "Masters" directory is to store "master" documents that have
+been used to generate some of the files used by the project.
+
+Files are listed below.
+
+--------------------------------------------------------------------------------
+MainIcon.pdn
+--------------------------------------------------------------------------------
+
+Description:
+
+  The program's icon as a layered Paint.NET image.
+
+Use:
+
+1)  To generate the program's main icon.
+
+    1) Used Paint.NET to open MainIcon.pdn and save all layers as a .png file.
+    2) Used Sib Icon editor's "Create Icon from image" option to load the .png
+       file and generate an icon file containing 256 colour and 32 bit icons in
+       16x16, 32x32 and 48x48 sizes. Did not allow Sib to add any effects to the
+       original image.
+    3) Generated image stored in ./Src/Assets/MainIcon.ico
+
+2)  To generate the project logo used on the project's GoogleCode page.
+
+    1) Used Paint.NET to open MainIcon.pdn, resized to 55x55 pixels, flattened
+       and saved as a .png.
+    2) Uploaded .png file to GoogleCode.
+
+
+--------------------------------------------------------------------------------
+$Rev$
+$Date$
+--------------------------------------------------------------------------------
