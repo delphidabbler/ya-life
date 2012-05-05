@@ -4,7 +4,8 @@ uses
   Forms,
   UI.Forms.FmBase in 'UI.Forms.FmBase.pas' {BaseForm},
   UI.Frames.FrBase in 'UI.Frames.FrBase.pas' {BaseFrame: TFrame},
-  UI.Forms.FmMain in 'UI.Forms.FmMain.pas' {MainForm};
+  UI.Forms.FmMain in 'UI.Forms.FmMain.pas' {MainForm},
+  UUtils in 'UUtils.pas';
 
 {$Resource Resources.res}
 {$Resource Version.res}
