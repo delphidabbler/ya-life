@@ -7,7 +7,8 @@ uses
   UI.Forms.FmMain in 'UI.Forms.FmMain.pas' {MainForm},
   UUtils in 'UUtils.pas',
   Engine.UCommon in 'Engine.UCommon.pas',
-  Engine.URules in 'Engine.URules.pas';
+  Engine.URules in 'Engine.URules.pas',
+  Engine.UGrid in 'Engine.UGrid.pas';
 
 {$Resource Resources.res}
 {$Resource Version.res}

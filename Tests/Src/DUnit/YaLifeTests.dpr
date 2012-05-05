@@ -22,7 +22,9 @@ uses
   TestRules in 'TestRules.pas',
   Engine.URules in '..\..\..\Src\Engine.URules.pas',
   Engine.UCommon in '..\..\..\Src\Engine.UCommon.pas',
-  UUtils in '..\..\..\Src\UUtils.pas';
+  UUtils in '..\..\..\Src\UUtils.pas',
+  Engine.UGrid in '..\..\..\Src\Engine.UGrid.pas',
+  TestGrid in 'TestGrid.pas';
 
 {$R *.RES}
 

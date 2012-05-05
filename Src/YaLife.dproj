@@ -41,6 +41,7 @@
 			<DCCReference Include="UUtils.pas"/>
 			<DCCReference Include="Engine.UCommon.pas"/>
 			<DCCReference Include="Engine.URules.pas"/>
+			<DCCReference Include="Engine.UGrid.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
