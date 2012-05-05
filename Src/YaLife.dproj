@@ -39,6 +39,8 @@
 				<Form>MainForm</Form>
 			</DCCReference>
 			<DCCReference Include="UUtils.pas"/>
+			<DCCReference Include="Engine.UCommon.pas"/>
+			<DCCReference Include="Engine.URules.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
