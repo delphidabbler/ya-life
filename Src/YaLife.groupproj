@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{C442C2BF-0E81-4BFC-80C5-D9B84558ADDE}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="YaLife.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\Tests\Src\DUnit\YaLifeTests.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="YaLife">
+			<MSBuild Projects="YaLife.dproj"/>
+		</Target>
+		<Target Name="YaLife:Clean">
+			<MSBuild Targets="Clean" Projects="YaLife.dproj"/>
+		</Target>
+		<Target Name="YaLife:Make">
+			<MSBuild Targets="Make" Projects="YaLife.dproj"/>
+		</Target>
+		<Target Name="YaLifeTests">
+			<MSBuild Projects="..\Tests\Src\DUnit\YaLifeTests.dproj"/>
+		</Target>
+		<Target Name="YaLifeTests:Clean">
+			<MSBuild Targets="Clean" Projects="..\Tests\Src\DUnit\YaLifeTests.dproj"/>
+		</Target>
+		<Target Name="YaLifeTests:Make">
+			<MSBuild Targets="Make" Projects="..\Tests\Src\DUnit\YaLifeTests.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="YaLife;YaLifeTests"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="YaLife:Clean;YaLifeTests:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="YaLife:Make;YaLifeTests:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>
