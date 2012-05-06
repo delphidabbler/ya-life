@@ -13,7 +13,7 @@ type
   end;
 
 type
-  IGrid = interface
+  IGrid = interface(IInterface)
     ['{E47F37D0-0C3E-4055-8CE0-1B9E65E5A074}']
     function GetSize: TSize;
     procedure SetSize(const NewSize: TSize);
