@@ -24,8 +24,7 @@ type
       default;
     procedure Initialise;
     function Population: UInt32;
-    function PatternOffset: TPoint;
-//    function PatternBounds: TPatternBounds;
+    function PatternBounds: TPatternBounds;
   end;
 
 type
@@ -43,11 +42,13 @@ type
     procedure SetState(X, Y: UInt16; NewState: TCellState);
     procedure Initialise;
     function Population: UInt32;
-    function PatternOffset: TPoint;
-//    function PatternBounds: TPatternBounds;
+    function PatternBounds: TPatternBounds;
   end;
 
 implementation
+
+uses
+  Math;
 
 { TGrid }
 
@@ -77,53 +78,101 @@ begin
   fPopulation := 0;
 end;
 
-function TGrid.PatternOffset: TPoint;
+function TGrid.PatternBounds: TPatternBounds;
 var
-  X, Y: UInt16;
-  FoundY: Boolean;
+  BoundsRect: TRect;  // bounding rectangle built using approximations
+
+  // Following routines must be called in order: they build on each other
+
+  function FindLeftMost: Boolean;
+  var
+    X, Y: Integer;
+  begin
+    for X := 0 to Pred(fSize.cx) do
+      for Y := 0 to Pred(fSize.cy) do
+        if fState[X,Y] = csOn then
+        begin
+          // found left-most
+          BoundsRect.Left := X;
+          // do estimates for others
+          BoundsRect.Right := X;  // right-most can be left of found X value
+          BoundsRect.Top := Y;    // topm-ost can't be lower than found Y value
+          BoundsRect.Bottom := Y; // bottom-most can't be above found Y value
+          Exit(True);
+        end;
+    Result := False;
+  end;
+
+  procedure FindRightMost;
+  var
+    X, Y: Integer;
+    MinRight: Integer;
+  begin
+    MinRight := BoundsRect.Right + 1;
+    for X := Pred(fSize.cx) downto MinRight do
+      for Y := 0 to Pred(fSize.cy) do
+        if fState[X,Y] = csOn then
+        begin
+          // found a better right-most
+          BoundsRect.Right := X;
+          // try to improve on estimates for top and bottom
+          BoundsRect.Top := Min(Y, BoundsRect.Top);
+          BoundsRect.Bottom := Max(Y, BoundsRect.Bottom);
+          Exit;
+        end;
+  end;
+
+  procedure FindTopMost;
+  var
+    X, Y: Integer;
+    MaxTop: Integer;
+  begin
+    MaxTop := BoundsRect.Top - 1;
+    for Y := 0 to MaxTop do
+      // We know there are no "On" cells to left of BoundsRect.Left or to right
+      // of BoundsRects.Right.
+      for X := BoundsRect.Left to BoundsRect.Right do
+        if fState[X,Y] = csOn then
+        begin
+          // found a better top-most
+          BoundsRect.Top := Y;
+          Exit;
+        end;
+  end;
+
+  procedure FindBottomMost;
+  var
+    X, Y: Integer;
+    MinBottom: Integer;
+  begin
+    MinBottom := BoundsRect.Bottom + 1;
+    for Y := Pred(fSize.cy) downto MinBottom + 1 do
+      // We know there are no "On" cells to left of BoundsRect.Left or to right
+      // of BoundsRects.Right.
+      for X := BoundsRect.Left to BoundsRect.Right do
+        if fState[X,Y] = csOn then
+        begin
+          // found a better bottom-most
+          BoundsRect.Bottom := Y;
+          Exit;
+        end;
+  end;
+
 begin
-  Result := Point(-1, -1);
-  // Find left-most cell containing part of pattern: this is Result.X. If that
-  // is found then it also gives us a first approximation to Result.Y.
-  X := 0;
-  while (X < fSize.cx) and (Result.X = -1) do
+  BoundsRect := Rect(fSize.cx, fSize.cy, -1, -1); // worst approximation
+  if not FindLeftMost then
   begin
-    Y := 0;
-    while (Y < fSize.cy) and (Result.X = -1) do
-    begin
-      if fState[X, Y] = csOn then
-      begin
-        Result.X := X;
-        Result.Y := Y;
-      end
-      else
-        Inc(Y);
-    end;
-    Inc(X);
-  end;
-  if Result.X = -1 then
+    Result.TopLeft := Point(-1, -1);
+    Result.Size.cx := 0;
+    Result.Size.cy := 0;
     Exit;
-  // We have found Result.X and a highest value for Result.Y. Now search area to
-  // left of Result.X and below Result.Y to see if there's a better value for
-  // Result.Y
-  FoundY := False;
-  Y := 0;
-  while (Y < Result.Y) and not FoundY do
-  begin
-    X := Result.X;
-    while (X < fSize.cx) and not FoundY do
-    begin
-      if fState[X, Y] = csOn then
-      begin
-        Result.Y := Y;
-        FoundY := True;
-      end
-      else
-        Inc(X);
-    end;
-    Inc(Y);
   end;
-  Assert(Result.Y >= 0);  // if we found X we must find Y
+  FindRightMost;
+  FindTopMost;
+  FindBottomMost;
+  Result.TopLeft := BoundsRect.TopLeft;
+  Result.Size.cx := RectWidth(BoundsRect) + 1;
+  Result.Size.cy := RectHeight(BoundsRect) + 1;
 end;
 
 function TGrid.Population: UInt32;
@@ -158,3 +207,4 @@ begin
 end;
 
 end.
+
