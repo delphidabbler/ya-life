@@ -30,7 +30,6 @@ type
     function PatternBounds: TPatternBounds;
     property State[X, Y: UInt16]: TCellState read GetState write SetState;
       default;
-    // TODO: permit setting of size to 0 (but not -ve)
     property Size: TSize read GetSize write SetSize;
   end;
 
@@ -59,7 +58,7 @@ end;
 
 procedure TGrid.Initialise;
 var
-  X, Y: UInt16;
+  X, Y: Integer;  // loop control: don't use UInt16
 begin
   for X := 0 to Pred(fSize.cx) do
     for Y := 0 to Pred(fSize.cy) do
@@ -171,7 +170,7 @@ end;
 
 procedure TGrid.SetSize(const NewSize: TSize);
 begin
-  Assert((NewSize.cx > 0) and (NewSize.cy > 0));
+  Assert((NewSize.cx >= 0) and (NewSize.cy >= 0));
 
   if (NewSize.cx <> fSize.cx) or (NewSize.cy <> fSize.cy) then
   begin
