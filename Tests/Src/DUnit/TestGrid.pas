@@ -41,7 +41,7 @@ end;
 
 function TestTGrid.IsZero(G: TGrid): Boolean;
 var
-  X, Y: UInt16;
+  X, Y: Integer;
 begin
   Result := True;
   for X := 0 to Pred(G.Size.cx) do
@@ -256,6 +256,9 @@ begin
   fGrid37x51.Size := CreateSize(12, 12);
   CheckEquals(12, fGrid37x51.Size.cx, 'Test 2 cx');
   CheckEquals(12, fGrid37x51.Size.cy, 'Test 2 cy');
+  fGrid37x51.Size := CreateSize(0, 0);
+  CheckEquals(0, fGrid37x51.Size.cx, 'Test 3 cx');
+  CheckEquals(0, fGrid37x51.Size.cy, 'Test 3 cy');
 end;
 
 procedure TestTGrid.TestState;
