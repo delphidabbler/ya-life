@@ -17,7 +17,7 @@ uses
 type
   TestTGrid = class(TTestCase)
   strict private
-    fGrid0, fGrid3751: IGrid;
+    fGrid0, fGrid37x51: IGrid;
     function CreateSize(const X, Y: Integer): TSize;
     function IsZero(G: IGrid): Boolean;
   public
@@ -53,206 +53,217 @@ end;
 procedure TestTGrid.SetUp;
 begin
   fGrid0 := TGrid.Create;
-  fGrid3751 := TGrid.Create;
-  fGrid3751.SetSize(CreateSize(37,51));
+  fGrid37x51 := TGrid.Create;
+  fGrid37x51.SetSize(CreateSize(37,51));
 end;
 
 procedure TestTGrid.TearDown;
 begin
   fGrid0 := nil;
-  fGrid3751 := nil;
+  fGrid37x51 := nil;
 end;
 
 procedure TestTGrid.TestInitialise;
 begin
-  fGrid3751.Initialise;
-  CheckTrue(IsZero(fGrid3751), 'Test 1');
-  fGrid3751[3,5] := csOn;
-  CheckFalse(IsZero(fGrid3751), 'Test 2');
-  fGrid3751.Initialise;
-  CheckTrue(IsZero(fGrid3751), 'Test 3');
+  fGrid37x51.Initialise;
+  CheckTrue(IsZero(fGrid37x51), 'Test 1');
+  fGrid37x51[3,5] := csOn;
+  CheckFalse(IsZero(fGrid37x51), 'Test 2');
+  fGrid37x51.Initialise;
+  CheckTrue(IsZero(fGrid37x51), 'Test 3');
   // test that setting size clears grid;
-  fGrid3751[3,5] := csOn;
-  CheckFalse(IsZero(fGrid3751), 'Test Size 1');
-  fGrid3751.Size := CreateSize(14, 7);
-  CheckTrue(IsZero(fGrid3751), 'Test Size 2');
+  fGrid37x51[3,5] := csOn;
+  CheckFalse(IsZero(fGrid37x51), 'Test Size 1');
+  fGrid37x51.Size := CreateSize(14, 7);
+  CheckTrue(IsZero(fGrid37x51), 'Test Size 2');
 end;
 
 procedure TestTGrid.TestPatternBounds;
 var
   B: TPatternBounds;
 begin
-  fGrid3751.Initialise;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51.Initialise;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(0, B.Size.cx, 'Test 1 cx');
   CheckEquals(0, B.Size.cy, 'Test 1 cy');
 
-  fGrid3751[16,19] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51[16,19] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(16, B.TopLeft.X, 'Test 2 x');
   CheckEquals(19, B.TopLeft.Y, 'Test 2 y');
   CheckEquals(1, B.Size.cx, 'Test 2 cx');
   CheckEquals(1, B.Size.cy, 'Test 2 cy');
 
-  fGrid3751[18,18] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51[18,18] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(16, B.TopLeft.X, 'Test 3 x');
   CheckEquals(18, B.TopLeft.Y, 'Test 3 y');
   CheckEquals(3, B.Size.cx, 'Test 3 cx');
   CheckEquals(2, B.Size.cy, 'Test 3 cy');
 
-  fGrid3751[15,21] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51[15,21] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(15, B.TopLeft.X, 'Test 4 x');
   CheckEquals(18, B.TopLeft.Y, 'Test 4 y');
   CheckEquals(4, B.Size.cx, 'Test 4 cx');
   CheckEquals(4, B.Size.cy, 'Test 4 cy');
 
-  fGrid3751[16,18] := csOn;
-  fGrid3751[17,18] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51[16,18] := csOn;
+  fGrid37x51[17,18] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(15, B.TopLeft.X, 'Test 5 x');
   CheckEquals(18, B.TopLeft.Y, 'Test 5 y');
   CheckEquals(4, B.Size.cx, 'Test 5 cx');
   CheckEquals(4, B.Size.cy, 'Test 5 cy');
 
-  fGrid3751[19,18] := csOn;
-  fGrid3751[14,17] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51[19,18] := csOn;
+  fGrid37x51[14,17] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(14, B.TopLeft.X, 'Test 6 x');
   CheckEquals(17, B.TopLeft.Y, 'Test 6 y');
   CheckEquals(6, B.Size.cx, 'Test 6 cx');
   CheckEquals(5, B.Size.cy, 'Test 6 cy');
 
-  fGrid3751[14,22] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51[14,22] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(14, B.TopLeft.X, 'Test 7 x');
   CheckEquals(17, B.TopLeft.Y, 'Test 7 y');
   CheckEquals(6, B.Size.cx, 'Test 7 cx');
   CheckEquals(6, B.Size.cy, 'Test 7 cy');
 
-  fGrid3751[12,18] := csOn;
-  fGrid3751[12,19] := csOn;
-  fGrid3751[12,20] := csOn;
-  fGrid3751[13,22] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51[12,18] := csOn;
+  fGrid37x51[12,19] := csOn;
+  fGrid37x51[12,20] := csOn;
+  fGrid37x51[13,22] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(12, B.TopLeft.X, 'Test 8 x');
   CheckEquals(17, B.TopLeft.Y, 'Test 8 y');
   CheckEquals(8, B.Size.cx, 'Test 8 cx');
   CheckEquals(6, B.Size.cy, 'Test 8 cy');
 
-  fGrid3751[14,19] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51[14,19] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(12, B.TopLeft.X, 'Test 9 x');
   CheckEquals(17, B.TopLeft.Y, 'Test 9 y');
   CheckEquals(8, B.Size.cx, 'Test 9 cx');
   CheckEquals(6, B.Size.cy, 'Test 9 cy');
 
-  fGrid3751[11,16] := csOn;
-  fGrid3751[19,17] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51[11,16] := csOn;
+  fGrid37x51[19,17] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(11, B.TopLeft.X, 'Test 10 x');
   CheckEquals(16, B.TopLeft.Y, 'Test 10 y');
   CheckEquals(9, B.Size.cx, 'Test 10 cx');
   CheckEquals(7, B.Size.cy, 'Test 10 cy');
 
-  fGrid3751[0,0] := csOn;
-  fGrid3751[0,50] := csOn;
-  fGrid3751[36,0] := csOn;
-  fGrid3751[36,50] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51[0,0] := csOn;
+  fGrid37x51[0,50] := csOn;
+  fGrid37x51[36,0] := csOn;
+  fGrid37x51[36,50] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(0, B.TopLeft.X, 'Test 11 x');
   CheckEquals(0, B.TopLeft.Y, 'Test 11 y');
   CheckEquals(37, B.Size.cx, 'Test 11 cx');
   CheckEquals(51, B.Size.cy, 'Test 11 cy');
 
-  fGrid3751.Initialise;
-  fGrid3751[0,0] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51.Initialise;
+  fGrid37x51[0,0] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(0, B.TopLeft.X, 'Test 12 x');
   CheckEquals(0, B.TopLeft.Y, 'Test 12 y');
   CheckEquals(1, B.Size.cx, 'Test 12 cx');
   CheckEquals(1, B.Size.cy, 'Test 12 cy');
 
-  fGrid3751.Initialise;
-  fGrid3751[36,50] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51.Initialise;
+  fGrid37x51[36,50] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(36, B.TopLeft.X, 'Test 13 x');
   CheckEquals(50, B.TopLeft.Y, 'Test 13 y');
   CheckEquals(1, B.Size.cx, 'Test 13 cx');
   CheckEquals(1, B.Size.cy, 'Test 13 cy');
 
-  fGrid3751.Initialise;
-  fGrid3751[36,0] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51.Initialise;
+  fGrid37x51[36,0] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(36, B.TopLeft.X, 'Test 14 x');
   CheckEquals(0, B.TopLeft.Y, 'Test 14 y');
   CheckEquals(1, B.Size.cx, 'Test 14 cx');
   CheckEquals(1, B.Size.cy, 'Test 14 cy');
 
-  fGrid3751.Initialise;
-  fGrid3751[0,50] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51.Initialise;
+  fGrid37x51[0,50] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(0, B.TopLeft.X, 'Test 15 x');
   CheckEquals(50, B.TopLeft.Y, 'Test 15 y');
   CheckEquals(1, B.Size.cx, 'Test 15 cx');
   CheckEquals(1, B.Size.cy, 'Test 15 cy');
 
-  fGrid3751.Initialise;
-  fGrid3751[0,50] := csOn;
-  fGrid3751[36,0] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51.Initialise;
+  fGrid37x51[0,50] := csOn;
+  fGrid37x51[36,0] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(0, B.TopLeft.X, 'Test 16 x');
   CheckEquals(0, B.TopLeft.Y, 'Test 16 y');
   CheckEquals(37, B.Size.cx, 'Test 16 cx');
   CheckEquals(51, B.Size.cy, 'Test 16 cy');
 
-  fGrid3751.Initialise;
-  fGrid3751[0,0] := csOn;
-  fGrid3751[36,50] := csOn;
-  B := fGrid3751.PatternBounds;
+  fGrid37x51.Initialise;
+  fGrid37x51[0,0] := csOn;
+  fGrid37x51[36,50] := csOn;
+  B := fGrid37x51.PatternBounds;
   CheckEquals(0, B.TopLeft.X, 'Test 16 x');
   CheckEquals(0, B.TopLeft.Y, 'Test 16 y');
   CheckEquals(37, B.Size.cx, 'Test 16 cx');
   CheckEquals(51, B.Size.cy, 'Test 16 cy');
+
+  fGrid37x51.Initialise;
+  fGrid37x51[1,1] := csOn;
+  fGrid37x51[1,2] := csOn;
+  fGrid37x51[2,1] := csOn;
+  fGrid37x51[2,2] := csOn;
+  B := fGrid37x51.PatternBounds;
+  CheckEquals(1, B.TopLeft.X, 'Test 16 x');
+  CheckEquals(1, B.TopLeft.Y, 'Test 16 y');
+  CheckEquals(2, B.Size.cx, 'Test 16 cx');
+  CheckEquals(2, B.Size.cy, 'Test 16 cy');
 end;
 
 procedure TestTGrid.TestPopulation;
 begin
-  CheckTrue(IsZero(fGrid3751), 'Test for initial zeroed grid');
-  CheckEquals(0, fGrid3751.Population, 'Test 0');
-  fGrid3751[0, 0] := csOn;
-  fGrid3751[2, 7] := csOn;
-  fGrid3751[23, 34] := csOn;
-  fGrid3751[36, 50] := csOn;
-  CheckEquals(4, fGrid3751.Population, 'Test 1');
-  fGrid3751[23, 34] := csOff;
-  CheckEquals(3, fGrid3751.Population, 'Test 2');
-  fGrid3751[2, 7] := csOn;
-  CheckEquals(3, fGrid3751.Population, 'Test 3');
-  fGrid3751[1, 3] := csOff;
-  CheckEquals(3, fGrid3751.Population, 'Test 4');
-  fGrid3751.Initialise;
-  CheckEquals(0, fGrid3751.Population, 'Test 5');
+  CheckTrue(IsZero(fGrid37x51), 'Test for initial zeroed grid');
+  CheckEquals(0, fGrid37x51.Population, 'Test 0');
+  fGrid37x51[0, 0] := csOn;
+  fGrid37x51[2, 7] := csOn;
+  fGrid37x51[23, 34] := csOn;
+  fGrid37x51[36, 50] := csOn;
+  CheckEquals(4, fGrid37x51.Population, 'Test 1');
+  fGrid37x51[23, 34] := csOff;
+  CheckEquals(3, fGrid37x51.Population, 'Test 2');
+  fGrid37x51[2, 7] := csOn;
+  CheckEquals(3, fGrid37x51.Population, 'Test 3');
+  fGrid37x51[1, 3] := csOff;
+  CheckEquals(3, fGrid37x51.Population, 'Test 4');
+  fGrid37x51.Initialise;
+  CheckEquals(0, fGrid37x51.Population, 'Test 5');
 end;
 
 procedure TestTGrid.TestSize;
 begin
   CheckEquals(0, fGrid0.Size.cx, 'Test 0 cx');
   CheckEquals(0, fGrid0.Size.cy, 'Test 0 cy');
-  CheckEquals(37, fGrid3751.Size.cx, 'Test 1 cx');
-  CheckEquals(51, fGrid3751.Size.cy, 'Test 1 cy');
-  fGrid3751.Size := CreateSize(12, 12);
-  CheckEquals(12, fGrid3751.Size.cx, 'Test 2 cx');
-  CheckEquals(12, fGrid3751.Size.cy, 'Test 2 cy');
+  CheckEquals(37, fGrid37x51.Size.cx, 'Test 1 cx');
+  CheckEquals(51, fGrid37x51.Size.cy, 'Test 1 cy');
+  fGrid37x51.Size := CreateSize(12, 12);
+  CheckEquals(12, fGrid37x51.Size.cx, 'Test 2 cx');
+  CheckEquals(12, fGrid37x51.Size.cy, 'Test 2 cy');
 end;
 
 procedure TestTGrid.TestState;
 begin
-  fGrid3751[3,5] := csOn;
-  CheckTrue(fGrid3751[3,5] = csOn, 'Test 1');
-  fGrid3751[3,5] := csOff;
-  CheckTrue(fGrid3751[3,5] = csOff, 'Test 2');
+  fGrid37x51[3,5] := csOn;
+  CheckTrue(fGrid37x51[3,5] = csOn, 'Test 1');
+  fGrid37x51[3,5] := csOff;
+  CheckTrue(fGrid37x51[3,5] = csOff, 'Test 2');
 end;
 
 initialization
