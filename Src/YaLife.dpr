@@ -8,7 +8,8 @@ uses
   UUtils in 'UUtils.pas',
   Engine.UCommon in 'Engine.UCommon.pas',
   Engine.URules in 'Engine.URules.pas',
-  Engine.UGrid in 'Engine.UGrid.pas';
+  Engine.UGrid in 'Engine.UGrid.pas',
+  Engine.UCompressedGrid in 'Engine.UCompressedGrid.pas';
 
 {$Resource Resources.res}
 {$Resource Version.res}

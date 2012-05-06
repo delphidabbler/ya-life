@@ -32,6 +32,8 @@
 			<DCCReference Include="..\..\..\Src\UUtils.pas"/>
 			<DCCReference Include="..\..\..\Src\Engine.UGrid.pas"/>
 			<DCCReference Include="TestGrid.pas"/>
+			<DCCReference Include="..\..\..\Src\Engine.UCompressedGrid.pas"/>
+			<DCCReference Include="TestCompressedGrid.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

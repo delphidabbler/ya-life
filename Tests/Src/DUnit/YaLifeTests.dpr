@@ -24,7 +24,9 @@ uses
   Engine.UCommon in '..\..\..\Src\Engine.UCommon.pas',
   UUtils in '..\..\..\Src\UUtils.pas',
   Engine.UGrid in '..\..\..\Src\Engine.UGrid.pas',
-  TestGrid in 'TestGrid.pas';
+  TestGrid in 'TestGrid.pas',
+  Engine.UCompressedGrid in '..\..\..\Src\Engine.UCompressedGrid.pas',
+  TestCompressedGrid in 'TestCompressedGrid.pas';
 
 {$R *.RES}
 
