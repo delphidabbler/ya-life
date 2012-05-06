@@ -17,9 +17,9 @@ uses
 type
   TestTGrid = class(TTestCase)
   strict private
-    fGrid0, fGrid37x51: IGrid;
+    fGrid0, fGrid37x51: TGrid;
     function CreateSize(const X, Y: Integer): TSize;
-    function IsZero(G: IGrid): Boolean;
+    function IsZero(G: TGrid): Boolean;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -39,7 +39,7 @@ begin
   Result.cy := Y;
 end;
 
-function TestTGrid.IsZero(G: IGrid): Boolean;
+function TestTGrid.IsZero(G: TGrid): Boolean;
 var
   X, Y: UInt16;
 begin
@@ -59,8 +59,8 @@ end;
 
 procedure TestTGrid.TearDown;
 begin
-  fGrid0 := nil;
-  fGrid37x51 := nil;
+  fGrid0.Free;
+  fGrid37x51.Free;
 end;
 
 procedure TestTGrid.TestInitialise;

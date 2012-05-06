@@ -13,22 +13,7 @@ type
   end;
 
 type
-  IGrid = interface(IInterface)
-    ['{E47F37D0-0C3E-4055-8CE0-1B9E65E5A074}']
-    function GetSize: TSize;
-    procedure SetSize(const NewSize: TSize);
-    property Size: TSize read GetSize write SetSize;
-    function GetState(X, Y: UInt16): TCellState;
-    procedure SetState(X, Y: UInt16; NewState: TCellState);
-    property State[X, Y: UInt16]: TCellState read GetState write SetState;
-      default;
-    procedure Initialise;
-    function Population: UInt32;
-    function PatternBounds: TPatternBounds;
-  end;
-
-type
-  TGrid = class(TInterfacedObject, IGrid)
+  TGrid = class(TObject)
   strict private
     var
       fSize: TSize;
@@ -43,6 +28,10 @@ type
     procedure Initialise;
     function Population: UInt32;
     function PatternBounds: TPatternBounds;
+    property State[X, Y: UInt16]: TCellState read GetState write SetState;
+      default;
+    // TODO: permit setting of size to 0 (but not -ve)
+    property Size: TSize read GetSize write SetSize;
   end;
 
 implementation
