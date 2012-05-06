@@ -86,7 +86,7 @@ var
 
   function FindLeftMost: Boolean;
   var
-    X, Y: Integer;
+    X, Y: Integer;  // loops thru grid - optimisation related bug if UInt16
   begin
     for X := 0 to Pred(fSize.cx) do
       for Y := 0 to Pred(fSize.cy) do
@@ -105,8 +105,8 @@ var
 
   procedure FindRightMost;
   var
-    X, Y: Integer;
-    MinRight: Integer;
+    X, Y: Integer;      // loops thru grid - optimisation related bug if UInt16
+    MinRight: Integer;  // minimum possible right value
   begin
     MinRight := BoundsRect.Right + 1;
     for X := Pred(fSize.cx) downto MinRight do
@@ -124,8 +124,8 @@ var
 
   procedure FindTopMost;
   var
-    X, Y: Integer;
-    MaxTop: Integer;
+    X, Y: Integer;    // loops thru grid - optimisation related bug if UInt16
+    MaxTop: Integer;  // maximum possible top value
   begin
     MaxTop := BoundsRect.Top - 1;
     for Y := 0 to MaxTop do
@@ -142,8 +142,8 @@ var
 
   procedure FindBottomMost;
   var
-    X, Y: Integer;
-    MinBottom: Integer;
+    X, Y: Integer;      // loops thru grid - optimisation related bug if UInt16
+    MinBottom: Integer; // minimum possible bottom value
   begin
     MinBottom := BoundsRect.Bottom + 1;
     for Y := Pred(fSize.cy) downto MinBottom + 1 do
