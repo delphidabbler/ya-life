@@ -146,7 +146,7 @@ var
     MinBottom: Integer; // minimum possible bottom value
   begin
     MinBottom := BoundsRect.Bottom + 1;
-    for Y := Pred(fSize.cy) downto MinBottom + 1 do
+    for Y := Pred(fSize.cy) downto MinBottom do
       // We know there are no "On" cells to left of BoundsRect.Left or to right
       // of BoundsRects.Right.
       for X := BoundsRect.Left to BoundsRect.Right do
