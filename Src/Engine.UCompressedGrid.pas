@@ -6,7 +6,7 @@ uses
   // Delphi
   Types, Classes, Generics.Collections,
   // Project
-  Engine.UCommon, Engine.UGrid;
+  Engine.UCommon, Engine.UGrid, UStructs;
 
 type
   TCompressedGrid = class(TObject)
@@ -44,7 +44,7 @@ type
       end;
   strict private
     var
-      fSize: TSize;
+      fSize: TSizeEx;
       fPatternBounds: TPatternBounds;
       fState: TList<Int8>;
     function GetState: TArray<Int8>;
@@ -59,7 +59,7 @@ type
     function IsEqual(const Another: TCompressedGrid): Boolean;
     property State: TArray<Int8> read GetState;
     property PatternBounds: TPatternBounds read fPatternBounds;
-    property Size: TSize read fSize;
+    property Size: TSizeEx read fSize;
   end;
 
 implementation
@@ -74,7 +74,7 @@ begin
   fSize := Grid.Size;
   // Get PatternBounds of pattern on grid
   fPatternBounds := Grid.PatternBounds;
-  if (fPatternBounds.Size.cx = 0) or (fPatternBounds.Size.cy = 0) then
+  if fPatternBounds.Size.IsZero then
     Exit;
   Compressor := TPatternCompressor.Create(Grid, PatternRegion, fState);
   try
@@ -89,10 +89,8 @@ begin
   inherited Create;
   fState := TList<Int8>.Create;
   fPatternBounds.TopLeft := Point(-1, -1);
-  fPatternBounds.Size.cx := 0;
-  fPatternBounds.Size.cy := 0;
-  fSize.cx := 0;
-  fSize.cy := 0;
+  fPatternBounds.Size := TSizeEx.Create(0, 0);
+  fSize := TSizeEx.Create(0, 0);
 end;
 
 destructor TCompressedGrid.Destroy;
@@ -111,12 +109,6 @@ begin
 end;
 
 function TCompressedGrid.IsEqual(const Another: TCompressedGrid): Boolean;
-
-  function IsZeroSize(const S: TSize): Boolean;
-  begin
-    Result := (S.cx = 0) or (S.cy = 0);
-  end;
-
 var
   Idx: Integer;
 begin
@@ -124,12 +116,7 @@ begin
     Exit(False);
   if fPatternBounds.TopLeft.Y <> Another.fPatternBounds.TopLeft.Y then
     Exit(False);
-  if IsZeroSize(fPatternBounds.Size) <>
-    IsZeroSize(Another.fPatternBounds.Size) then
-    Exit(False);
-  if fPatternBounds.Size.cx <> Another.fPatternBounds.Size.cx then
-    Exit(False);
-  if fPatternBounds.Size.cy <> Another.fPatternBounds.Size.cy then
+  if fPatternBounds.Size <> fPatternBounds.Size then
     Exit(False);
   if fState.Count <> Another.fState.Count then
     Exit(False);
@@ -148,8 +135,8 @@ function TCompressedGrid.PatternRegion: TRect;
 begin
   Result.TopLeft := fPatternBounds.TopLeft;
   Result.BottomRight := Point(
-    fPatternBounds.TopLeft.X + fPatternBounds.Size.cx - 1,
-    fPatternBounds.TopLeft.Y + fPatternBounds.Size.cy - 1
+    fPatternBounds.TopLeft.X + fPatternBounds.Size.CX - 1,
+    fPatternBounds.TopLeft.Y + fPatternBounds.Size.CY - 1
   );
 end;
 
@@ -163,7 +150,7 @@ var
   Inflator: TPatternInflator;
 begin
   Grid.Size := fSize;
-  if (fPatternBounds.Size.cx = 0) or (fPatternBounds.Size.cy = 0) then
+  if fPatternBounds.Size.IsZero then
     Exit;
   Inflator := TPatternInflator.Create(Grid, PatternRegion, fState);
   try

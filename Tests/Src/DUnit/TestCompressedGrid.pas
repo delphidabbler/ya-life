@@ -13,7 +13,7 @@ interface
 
 uses
   Types, TestFramework, Generics.Collections, Engine.UCompressedGrid,
-  Engine.UGrid, Engine.UCommon;
+  Engine.UGrid, Engine.UCommon, UStructs;
 
 type
   TestTCompressedGrid = class(TTestCase)
@@ -33,12 +33,6 @@ type
 
 implementation
 
-function MakeSize(CX, CY: Integer): TSize;
-begin
-  Result.cx := CX;
-  Result.cy := CY;
-end;
-
 function IsEqualArray(const A1, A2: TArray<Int8>): Boolean;
 var
   Idx: Integer;
@@ -55,10 +49,10 @@ function IsEqualGrid(G1, G2: TGrid): Boolean;
 var
   X, Y: Integer;
 begin
-  if (G1.Size.cx <> G2.Size.cx) or (G1.Size.cy <> G2.Size.cy) then
+  if G1.Size <> G2.Size then
     Exit(False);
-  for X := 0 to Pred(G1.Size.cx) do
-    for Y := 0 to Pred(G1.Size.cy) do
+  for X := 0 to Pred(G1.Size.CX) do
+    for Y := 0 to Pred(G1.Size.CY) do
       if G1[X,Y] <> G2[X,Y] then
         Exit(False);
   Result := True;
@@ -69,7 +63,7 @@ end;
 procedure TestTCompressedGrid.SetUp;
 begin
   fGrid40x60 := TGrid.Create;
-  fGrid40x60.Size := MakeSize(40, 60);
+  fGrid40x60.Size := TSizeEx.Create(40, 60);
   fGrid40x60[13,31] := csOn;
   fGrid40x60[14,31] := csOn;
   fGrid40x60[12,32] := csOn;
@@ -94,21 +88,21 @@ begin
   fGrid0x0 := TGrid.Create;
   // 1x1 grid with single cell on
   fGrid1x1on := TGrid.Create;
-  fGrid1x1on.Size := MakeSize(1, 1);
+  fGrid1x1on.Size := TSizeEx.Create(1, 1);
   fGrid1x1on[0, 0] := csOn;
   // 1x1 grid with single cell off
   fGrid1x1off := TGrid.Create;
-  fGrid1x1off.Size := MakeSize(1, 1);
+  fGrid1x1off.Size := TSizeEx.Create(1, 1);
   // 4x4 grid with centred 2x2 set of on cells
   fGrid4x4 := TGrid.Create;
-  fGrid4x4.Size := MakeSize(4, 4);
+  fGrid4x4.Size := TSizeEx.Create(4, 4);
   fGrid4x4[1,1] := csOn;
   fGrid4x4[1,2] := csOn;
   fGrid4x4[2,1] := csOn;
   fGrid4x4[2,2] := csOn;
   // 7x6 grid with pattern
   fGrid7x6 := TGrid.Create;
-  fGrid7x6.Size := MakeSize(7, 6);
+  fGrid7x6.Size := TSizeEx.Create(7, 6);
   fGrid7x6[2,1] := csOn;
   fGrid7x6[3,1] := csOn;
   fGrid7x6[1,2] := csOn;
@@ -146,61 +140,61 @@ begin
   A := fCompGrid.State;
   ATest := TArray<Int8>.Create(2, 0, 2, 0);
   CheckTrue(IsEqualArray(A, ATest), 'Test 4x4 array');
-  CheckEquals(4, fCompGrid.Size.cx, 'Test 4x4 Size.cx');
-  CheckEquals(4, fCompGrid.Size.cy, 'Test 4x4 Size.cy');
+  CheckEquals(4, fCompGrid.Size.CX, 'Test 4x4 Size.CX');
+  CheckEquals(4, fCompGrid.Size.CY, 'Test 4x4 Size.CY');
   CheckEquals(1, fCompGrid.PatternBounds.TopLeft.X, 'Test 4x4 P-TopLeft.X');
   CheckEquals(1, fCompGrid.PatternBounds.TopLeft.Y, 'Test 4x4 P-TopLeft.Y');
-  CheckEquals(2, fCompGrid.PatternBounds.Size.cx, 'Test 4x4 P-Size.cx');
-  CheckEquals(2, fCompGrid.PatternBounds.Size.cy, 'Test 4x4 P-Size.cy');
+  CheckEquals(2, fCompGrid.PatternBounds.Size.CX, 'Test 4x4 P-Size.CX');
+  CheckEquals(2, fCompGrid.PatternBounds.Size.CY, 'Test 4x4 P-Size.CY');
 
   fCompGrid.Compress(fGrid0x0);
   A := fCompGrid.State;
   ATest := TArray<Int8>.Create();
   CheckTrue(IsEqualArray(A, ATest), 'Test 0x0 array');
-  CheckEquals(0, fCompGrid.Size.cx, 'Test 0x0 Size.cx');
-  CheckEquals(0, fCompGrid.Size.cy, 'Test 0x0 Size.cy');
-  CheckEquals(0, fCompGrid.PatternBounds.Size.cx, 'Test 0x0 P-Size.cx');
-  CheckEquals(0, fCompGrid.PatternBounds.Size.cy, 'Test 0x0 P-Size.cy');
+  CheckEquals(0, fCompGrid.Size.CX, 'Test 0x0 Size.CX');
+  CheckEquals(0, fCompGrid.Size.CY, 'Test 0x0 Size.CY');
+  CheckEquals(0, fCompGrid.PatternBounds.Size.CX, 'Test 0x0 P-Size.CX');
+  CheckEquals(0, fCompGrid.PatternBounds.Size.CY, 'Test 0x0 P-Size.CY');
 
   fCompGrid.Compress(fGrid1x1on);
   A := fCompGrid.State;
   ATest := TArray<Int8>.Create(1, 0);
   CheckTrue(IsEqualArray(A, ATest), 'Test 1x1(on) array');
-  CheckEquals(1, fCompGrid.Size.cx, 'Test 1x1(on) Size.cx');
-  CheckEquals(1, fCompGrid.Size.cy, 'Test 1x1(on) Size.cy');
+  CheckEquals(1, fCompGrid.Size.CX, 'Test 1x1(on) Size.CX');
+  CheckEquals(1, fCompGrid.Size.CY, 'Test 1x1(on) Size.CY');
   CheckEquals(0, fCompGrid.PatternBounds.TopLeft.X, 'Test 1x1(on) P-TopLeft.X');
   CheckEquals(0, fCompGrid.PatternBounds.TopLeft.Y, 'Test 1x1(on) P-TopLeft.Y');
-  CheckEquals(1, fCompGrid.PatternBounds.Size.cx, 'Test 1x1(on) P-Size.cx');
-  CheckEquals(1, fCompGrid.PatternBounds.Size.cy, 'Test 1x1(on) P-Size.cy');
+  CheckEquals(1, fCompGrid.PatternBounds.Size.CX, 'Test 1x1(on) P-Size.CX');
+  CheckEquals(1, fCompGrid.PatternBounds.Size.CY, 'Test 1x1(on) P-Size.CY');
 
   fCompGrid.Compress(fGrid1x1off);
   A := fCompGrid.State;
   ATest := TArray<Int8>.Create();
   CheckTrue(IsEqualArray(A, ATest), 'Test 1x1(off) array');
-  CheckEquals(1, fCompGrid.Size.cx, 'Test 1x1(off) Size.cx');
-  CheckEquals(1, fCompGrid.Size.cy, 'Test 1x1(off) Size.cy');
-  CheckEquals(0, fCompGrid.PatternBounds.Size.cx, 'Test 1x1(off) P-Size.cx');
-  CheckEquals(0, fCompGrid.PatternBounds.Size.cy, 'Test 1x1(off) P-Size.cy');
+  CheckEquals(1, fCompGrid.Size.CX, 'Test 1x1(off) Size.CX');
+  CheckEquals(1, fCompGrid.Size.CY, 'Test 1x1(off) Size.CY');
+  CheckEquals(0, fCompGrid.PatternBounds.Size.CX, 'Test 1x1(off) P-Size.CX');
+  CheckEquals(0, fCompGrid.PatternBounds.Size.CY, 'Test 1x1(off) P-Size.CY');
 
   fCompGrid.Compress(fGrid1x1off);
   A := fCompGrid.State;
   ATest := TArray<Int8>.Create();
   CheckTrue(IsEqualArray(A, ATest), 'Test 1x1(off) array');
-  CheckEquals(1, fCompGrid.Size.cx, 'Test 1x1(off) Size.cx');
-  CheckEquals(1, fCompGrid.Size.cy, 'Test 1x1(off) Size.cy');
-  CheckEquals(0, fCompGrid.PatternBounds.Size.cx, 'Test 1x1(off) P-Size.cx');
-  CheckEquals(0, fCompGrid.PatternBounds.Size.cy, 'Test 1x1(off) P-Size.cy');
+  CheckEquals(1, fCompGrid.Size.CX, 'Test 1x1(off) Size.CX');
+  CheckEquals(1, fCompGrid.Size.CY, 'Test 1x1(off) Size.CY');
+  CheckEquals(0, fCompGrid.PatternBounds.Size.CX, 'Test 1x1(off) P-Size.CX');
+  CheckEquals(0, fCompGrid.PatternBounds.Size.CY, 'Test 1x1(off) P-Size.CY');
 
   fCompGrid.Compress(fGrid7x6);
   A := fCompGrid.State;
   ATest := TArray<Int8>.Create(-1,2,0,1,-2,2,0,1,-1,1,0,-1,2,0);
   CheckTrue(IsEqualArray(A, ATest), 'Test 7x6 array');
-  CheckEquals(7, fCompGrid.Size.cx, 'Test 7x6 Size.cx');
-  CheckEquals(6, fCompGrid.Size.cy, 'Test 7x6 Size.cy');
+  CheckEquals(7, fCompGrid.Size.CX, 'Test 7x6 Size.CX');
+  CheckEquals(6, fCompGrid.Size.CY, 'Test 7x6 Size.CY');
   CheckEquals(1, fCompGrid.PatternBounds.TopLeft.X, 'Test 7x6 P-TopLeft.X');
   CheckEquals(1, fCompGrid.PatternBounds.TopLeft.Y, 'Test 7x6 P-TopLeft.Y');
-  CheckEquals(5, fCompGrid.PatternBounds.Size.cx, 'Test 7x6 P-Size.cx');
-  CheckEquals(4, fCompGrid.PatternBounds.Size.cy, 'Test 7x6 P-Size.cy');
+  CheckEquals(5, fCompGrid.PatternBounds.Size.CX, 'Test 7x6 P-Size.CX');
+  CheckEquals(4, fCompGrid.PatternBounds.Size.CY, 'Test 7x6 P-Size.CY');
 
   fCompGrid.Compress(fGrid40x60);
   A := fCompGrid.State;
@@ -214,12 +208,12 @@ begin
     -2,1,0
   );
   CheckTrue(IsEqualArray(A, ATest), 'Test 7x6 array');
-  CheckEquals(40, fCompGrid.Size.cx, 'Test 7x6 Size.cx');
-  CheckEquals(60, fCompGrid.Size.cy, 'Test 7x6 Size.cy');
+  CheckEquals(40, fCompGrid.Size.CX, 'Test 7x6 Size.CX');
+  CheckEquals(60, fCompGrid.Size.CY, 'Test 7x6 Size.CY');
   CheckEquals(10, fCompGrid.PatternBounds.TopLeft.X, 'Test 7x6 P-TopLeft.X');
   CheckEquals(31, fCompGrid.PatternBounds.TopLeft.Y, 'Test 7x6 P-TopLeft.Y');
-  CheckEquals(7, fCompGrid.PatternBounds.Size.cx, 'Test 7x6 P-Size.cx');
-  CheckEquals(7, fCompGrid.PatternBounds.Size.cy, 'Test 7x6 P-Size.cy');
+  CheckEquals(7, fCompGrid.PatternBounds.Size.CX, 'Test 7x6 P-Size.CX');
+  CheckEquals(7, fCompGrid.PatternBounds.Size.CY, 'Test 7x6 P-Size.CY');
 end;
 
 procedure TestTCompressedGrid.TestUnCompress;
@@ -227,38 +221,38 @@ begin
   fCompGrid.Compress(fGrid7x6);
   fCompGrid.UnCompress(fUnCompGrid);
   CheckTrue(IsEqualGrid(fUnCompGrid, fGrid7x6), 'Test 7x6 grid');
-  CheckEquals(7, fUnCompGrid.Size.cx, 'Test 7x6 Size.cx');
-  CheckEquals(6, fUnCompGrid.Size.cy, 'Test 7x6 Size.cy');
+  CheckEquals(7, fUnCompGrid.Size.CX, 'Test 7x6 Size.CX');
+  CheckEquals(6, fUnCompGrid.Size.CY, 'Test 7x6 Size.CY');
 
   fCompGrid.Compress(fGrid0x0);
   fCompGrid.UnCompress(fUnCompGrid);
   CheckTrue(IsEqualGrid(fUnCompGrid, fGrid0x0), 'Test 0x0 grid');
-  CheckEquals(0, fUnCompGrid.Size.cx, 'Test 0x0 Size.cx');
-  CheckEquals(0, fUnCompGrid.Size.cy, 'Test 0x0 Size.cy');
+  CheckEquals(0, fUnCompGrid.Size.CX, 'Test 0x0 Size.CX');
+  CheckEquals(0, fUnCompGrid.Size.CY, 'Test 0x0 Size.CY');
 
   fCompGrid.Compress(fGrid1x1off);
   fCompGrid.UnCompress(fUnCompGrid);
   CheckTrue(IsEqualGrid(fUnCompGrid, fGrid1x1off), 'Test 1x1(off) grid');
-  CheckEquals(1, fUnCompGrid.Size.cx, 'Test 1x1(off) Size.cx');
-  CheckEquals(1, fUnCompGrid.Size.cy, 'Test 1x1(off) Size.cy');
+  CheckEquals(1, fUnCompGrid.Size.CX, 'Test 1x1(off) Size.CX');
+  CheckEquals(1, fUnCompGrid.Size.CY, 'Test 1x1(off) Size.CY');
 
   fCompGrid.Compress(fGrid1x1on);
   fCompGrid.UnCompress(fUnCompGrid);
   CheckTrue(IsEqualGrid(fUnCompGrid, fGrid1x1on), 'Test 1x1(on) grid');
-  CheckEquals(1, fUnCompGrid.Size.cx, 'Test 1x1(on) Size.cx');
-  CheckEquals(1, fUnCompGrid.Size.cy, 'Test 1x1(on) Size.cy');
+  CheckEquals(1, fUnCompGrid.Size.CX, 'Test 1x1(on) Size.CX');
+  CheckEquals(1, fUnCompGrid.Size.CY, 'Test 1x1(on) Size.CY');
 
   fCompGrid.Compress(fGrid4x4);
   fCompGrid.UnCompress(fUnCompGrid);
   CheckTrue(IsEqualGrid(fUnCompGrid, fGrid4x4), 'Test 4x4 grid');
-  CheckEquals(4, fUnCompGrid.Size.cx, 'Test 4x4 Size.cx');
-  CheckEquals(4, fUnCompGrid.Size.cy, 'Test 4x4 Size.cy');
+  CheckEquals(4, fUnCompGrid.Size.CX, 'Test 4x4 Size.CX');
+  CheckEquals(4, fUnCompGrid.Size.CY, 'Test 4x4 Size.CY');
 
   fCompGrid.Compress(fGrid40x60);
   fCompGrid.UnCompress(fUnCompGrid);
   CheckTrue(IsEqualGrid(fUnCompGrid, fGrid40x60), 'Test 40x60 grid');
-  CheckEquals(40, fUnCompGrid.Size.cx, 'Test 40x60 Size.cx');
-  CheckEquals(60, fUnCompGrid.Size.cy, 'Test 40x60 Size.cy');
+  CheckEquals(40, fUnCompGrid.Size.CX, 'Test 40x60 Size.CX');
+  CheckEquals(60, fUnCompGrid.Size.CY, 'Test 40x60 Size.CY');
 
 end;
 
