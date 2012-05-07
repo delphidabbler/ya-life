@@ -9,7 +9,8 @@ uses
   Engine.UCommon in 'Engine.UCommon.pas',
   Engine.URules in 'Engine.URules.pas',
   Engine.UGrid in 'Engine.UGrid.pas',
-  Engine.UCompressedGrid in 'Engine.UCompressedGrid.pas';
+  Engine.UCompressedGrid in 'Engine.UCompressedGrid.pas',
+  UStructs in 'UStructs.pas';
 
 {$Resource Resources.res}
 {$Resource Version.res}

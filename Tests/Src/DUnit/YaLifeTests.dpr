@@ -26,7 +26,9 @@ uses
   Engine.UGrid in '..\..\..\Src\Engine.UGrid.pas',
   TestGrid in 'TestGrid.pas',
   Engine.UCompressedGrid in '..\..\..\Src\Engine.UCompressedGrid.pas',
-  TestCompressedGrid in 'TestCompressedGrid.pas';
+  TestCompressedGrid in 'TestCompressedGrid.pas',
+  UStructs in '..\..\..\Src\UStructs.pas',
+  TestStructs in 'TestStructs.pas';
 
 {$R *.RES}
 
