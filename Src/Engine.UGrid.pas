@@ -8,8 +8,16 @@ uses
 
 type
   TPatternBounds = record
+  public
     TopLeft: TPoint;
     Size: TSizeEx;
+    constructor Create(const ATopLeft: TPoint; const ASize: TSizeEx); overload;
+    constructor Create(const ARect: TRect); overload;
+    class function CreateEmpty: TPatternBounds; static;
+    class operator Equal(const PB1, PB2: TPatternBounds): Boolean;
+    class operator NotEqual(const PB1, PB2: TPatternBounds): Boolean;
+    function BoundsRect: TRect;
+    function IsEmpty: Boolean;
   end;
 
 type
@@ -92,7 +100,7 @@ begin
       if fState[X,Y] <> AGrid.fState[X,Y] then
         Exit(False);
   Result := True;
-  // Polulations should match: they redundant information so not tested above
+  // Populations should match: they redundant information so not tested above
   Assert(fPopulation = AGrid.fPopulation);
 end;
 
@@ -180,17 +188,13 @@ begin
   BoundsRect := Rect(fSize.CX, fSize.CY, -1, -1); // worst approximation
   if not FindLeftMost then
   begin
-    Result.TopLeft := Point(-1, -1);
-    Result.Size := TSizeEx.Create(0, 0);
+    Result := TPatternBounds.CreateEmpty;
     Exit;
   end;
   FindRightMost;
   FindTopMost;
   FindBottomMost;
-  Result.TopLeft := BoundsRect.TopLeft;
-  Result.Size := TSizeEx.Create(
-    RectWidth(BoundsRect) + 1, RectHeight(BoundsRect) + 1
-  );
+  Result := TPatternBounds.Create(BoundsRect);
 end;
 
 function TGrid.Population: UInt32;
@@ -218,6 +222,50 @@ begin
         Dec(fPopulation);
   end;
   fState[X, Y] := NewState;
+end;
+
+{ TPatternBounds }
+
+function TPatternBounds.BoundsRect: TRect;
+begin
+  Result.TopLeft := TopLeft;
+  Result.BottomRight := Point(TopLeft.X + Size.CX - 1, TopLeft.Y + Size.CY - 1);
+end;
+
+constructor TPatternBounds.Create(const ARect: TRect);
+begin
+  Create(
+    ARect.TopLeft,
+    TSizeEx.Create(RectWidth(ARect) + 1, RectHeight(ARect) + 1)
+  );
+end;
+
+constructor TPatternBounds.Create(const ATopLeft: TPoint; const ASize: TSizeEx);
+begin
+  TopLeft := ATopLeft;
+  Size := ASize;
+end;
+
+class function TPatternBounds.CreateEmpty: TPatternBounds;
+begin
+  Result := TPatternBounds.Create(Point(-1, -1), TSizeEx.Create(0, 0));
+end;
+
+class operator TPatternBounds.Equal(const PB1, PB2: TPatternBounds): Boolean;
+begin
+  Result := (PB1.Size = PB2.Size)
+    and (PB1.TopLeft.X = PB2.TopLeft.X)
+    and (PB1.TopLeft.Y = PB2.TopLeft.Y);
+end;
+
+function TPatternBounds.IsEmpty: Boolean;
+begin
+  Result := Size.IsZero;
+end;
+
+class operator TPatternBounds.NotEqual(const PB1, PB2: TPatternBounds): Boolean;
+begin
+  Result := not (PB1 = PB2);
 end;
 
 end.

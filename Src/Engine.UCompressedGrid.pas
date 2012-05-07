@@ -74,7 +74,7 @@ begin
   fSize := Grid.Size;
   // Get PatternBounds of pattern on grid
   fPatternBounds := Grid.PatternBounds;
-  if fPatternBounds.Size.IsZero then
+  if fPatternBounds.IsEmpty then
     Exit;
   Compressor := TPatternCompressor.Create(Grid, PatternRegion, fState);
   try
@@ -88,8 +88,7 @@ constructor TCompressedGrid.Create;
 begin
   inherited Create;
   fState := TList<Int8>.Create;
-  fPatternBounds.TopLeft := Point(-1, -1);
-  fPatternBounds.Size := TSizeEx.Create(0, 0);
+  fPatternBounds := TPatternBounds.CreateEmpty;
   fSize := TSizeEx.Create(0, 0);
 end;
 
@@ -112,11 +111,7 @@ function TCompressedGrid.IsEqual(const Another: TCompressedGrid): Boolean;
 var
   Idx: Integer;
 begin
-  if fPatternBounds.TopLeft.X <> Another.fPatternBounds.TopLeft.X then
-    Exit(False);
-  if fPatternBounds.TopLeft.Y <> Another.fPatternBounds.TopLeft.Y then
-    Exit(False);
-  if fPatternBounds.Size <> fPatternBounds.Size then
+  if fPatternBounds <> Another.fPatternBounds then
     Exit(False);
   if fState.Count <> Another.fState.Count then
     Exit(False);
@@ -133,11 +128,7 @@ end;
 
 function TCompressedGrid.PatternRegion: TRect;
 begin
-  Result.TopLeft := fPatternBounds.TopLeft;
-  Result.BottomRight := Point(
-    fPatternBounds.TopLeft.X + fPatternBounds.Size.CX - 1,
-    fPatternBounds.TopLeft.Y + fPatternBounds.Size.CY - 1
-  );
+  Result := fPatternBounds.BoundsRect;
 end;
 
 procedure TCompressedGrid.SaveToStream(const Stm: TStream);
@@ -150,7 +141,7 @@ var
   Inflator: TPatternInflator;
 begin
   Grid.Size := fSize;
-  if fPatternBounds.Size.IsZero then
+  if fPatternBounds.IsEmpty then
     Exit;
   Inflator := TPatternInflator.Create(Grid, PatternRegion, fState);
   try
