@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+
+<html>
+  <head>
+    <title>Life File Formats Documentation</title>
+    <style type="text/css">
+      mark {
+        background-color: #ff7;
+      }
+      aside {
+        font-style: italic;
+      }
+      .indent {
+        margin-left: 3em;
+      }
+      h1 {
+        font-size: 200%;
+      }
+      h2 {
+        font-size: 150%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <section>
+      <h1>Introduction</h1>
+      <p>
+        This document describes the various file formats used for Game of Life
+        and Life-like programs.
+      </p>
+      <p>
+        Contents was assembled from various parts of the internet.
+      </p>
+    </section>
+    <section>
+      <h1>Life 1.05 Format</h1>
+      <p>
+        This file is in text format <mark title="query this">(ASCII?)</mark>.
+        Lines may not exceed 80 characters. End of line is denoted by the MS-DOS
+        / Windows format of CR followed by LF. Files usually have the
+        <kbd>.LIF</kbd> extension.
+      </p>
+      <p>
+        The first line of the file is a header that identifies the format. It
+        is:
+      </p>
+      <p class="indent">
+        <kbd>#Life 1.05</kbd>
+      </p>
+      <aside>
+        <p>
+          In theory, a lower number is acceptable for this format, but it's not
+          clear what these formats may be.
+        </p>
+      </aside>
+      <p>
+        After the header are optional description lines which begin with
+        <kbd>#D</kbd> and are followed by no more than 78 characters of text.
+        Leading and trailing spaces are ignored. For example, the following two
+        lines are equivalent:
+      </p>
+      <pre class="indent">#D This is a Description line
+#D    This is a Description line</pre>
+      <p>
+        There should be no more than 22 <kbd>#D</kbd>  lines in the
+        file.
+      </p>
+      <p>
+        Next comes an optional rule specification.  If no rules are specified
+        the pattern will run with whatever rule the Life program is currently
+        using. There are two forms of the rule specification:
+      </p>
+      <dl>
+        <dt>
+          <kbd>#R</kbd>
+        </dt>
+        <dd>
+          This specifies the required rule in S/B format. For example
+          <kbd>#R&nbsp;23/3</kbd> for <a
+            href="http://www.conwaylife.com/wiki/Conway%27s_Game_of_Life"
+          >Conway's Life</a> or
+          <kbd>#R&nbsp;23/36</kbd> for <a
+            href="http://en.wikipedia.org/wiki/HighLife"
+          >HighLife</a>.
+        </dd>
+        <dl>
+          <kbd>#N</kbd>
+        </dl>
+        <dd>
+          <kbd>#N</kbd> appears on its own and is simply a short way of
+          specifying <a
+            href="http://www.conwaylife.com/wiki/Conway%27s_Game_of_Life"
+          >Conway's Life</a>. It is equivalent to <kbd>#R&nbsp;23/3</kbd>.
+        </dd>
+      </dl>
+      <p>
+        The next part of the file contains information about the cells. There is
+        one or more &quot;cell blocks&quot;.
+      </p>
+      <p>
+        Each cell block starts with a <kbd>#P</kbd> line, where the
+        <kbd>#P</kbd> is followed by the (x,y) coordinates of the upper left
+        hand corner of the cell block, where (0,0) is the center of the current
+        window to the Life universe. For example <kbd>#P&nbsp;-1 4</kbd>.
+      </p>
+      <p>
+        The <kbd>#P</kbd> line is followed by one of more lines that define the
+        state of the cells in the block. Each line describes a row of the block
+        with <kbd>.</kbd> (a dot) representing an &quot;off&quot; cell and
+        <kbd>*</kbd> representing &quot;on&quot;.
+      </p>
+      <p>
+        Blank lines are represented by a single <kbd>.</kbd> (dot). Any other
+        line may truncate all dots to the right of the last <kbd>*</kbd>. Any
+        blank line is ignored.
+      </p>
+      <p>
+        There is no limit to the number of lines in a cell block, but the file's
+        80 character width limit applies to the row width.
+      </p>
+      <h2>Xlife compatibility</h2>
+      <p>
+        Xlife recognizes the symbol <kbd>#C</kbd> (for <kbd>C</kbd>omment)
+        instead of <kbd>#D</kbd>.
+      </p>
+      <p>
+        The default extension is <kbd>.life</kbd> instead of <kbd>.LIF</kbd>.
+      </p>
+    </section>
+  </body>
+</html>
