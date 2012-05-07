@@ -34,6 +34,141 @@
       </p>
     </section>
     <section>
+      <h1>Run Length Encoded (RLE)</h1>
+      <p>
+        This file is in text format. Lines must not exceed 70 characters
+        although it is recommended that reader can handle more than this.
+        End of line markers can be in any of the Unix, DOS/Windows or Mac
+        styles.
+      </p>
+      <p>
+        There are four distinct sections of the file. In order they are:
+      </p>
+      <ol>
+        <li># lines</li>
+        <li>Header line</li>
+        <li>Pattern lines</li>
+        <li>Comments</li>
+      </ol>
+      <h2># lines</h2>
+      <p>
+        # lines begin with <kbd>#</kbd> followed a letter indicating the type of
+        information the line provides. They are:
+      </p>
+      <dl>
+        <dt><kbd>C</kbd></dt>
+        <dd>
+          <div>
+            Indicates that a line of comment follows. Example:
+          </div>
+          <pre class="indent">#C 'Twas brillig and the slithy toves</pre>
+        </dd>
+        <dt><kbd>c</kbd>
+        <dd>
+          Same as C.
+        </dd>
+        <dt><kbd>N</kbd></dt>
+        <dd>
+          <div>
+            The name of the pattern. Example:
+          </div>
+          <pre class="indent">#N My awesome pattern</pre>
+        </dd>
+        <dt><kbd>O</kbd></dt>
+        <dd>
+          <div>
+            Says when and by whom the file was created. Example:
+          </div>
+          <pre class="indent">#O John Smith john@gmail.com Fri Apr 30 19:38:52 1999</pre>
+        </dd>
+        <dt><kbd>P</kbd></dt>
+        <dd>
+          <div>
+            Essentially the same as <kbd>R</kbd>, below. Coordinates 
+            representing the top-left corner of the Life pattern.
+            <mark title="Clarify this">Relative to top left of grid?</mark>
+            Example:
+          </div>
+          <pre class="indent">#P 90 136</pre>
+        </dd>
+        <dl><kbd>R</kbd></dl>
+        <dd>
+          <div>
+            Gives the coordinates of the top-left corner of the pattern relative
+            to the centre of the grid. Example:
+          </div>
+          <pre class="indent">#R -22 -57</pre>
+        </dd>
+        <dl><kbd>r</kbd></dl>
+        <dd>
+          <div>
+            Gives the rules for the pattern in S/B format. The standard method
+            of representing rules is in the <em>header line</em> (below), but
+            this form is sometimes used instead. Example:
+          </div>
+          <pre class="indent">#r 23/3</pre>
+        </dd>
+      </dl>
+      <h2>Header line</h2>
+      <p>
+        The header line has the form:
+      </p>
+      <pre class="indent">x = m, y = n, rule = Baaa/Sbbb</pre>
+      <p>
+        <kbd>x</kbd>, <kbd>y</kbd> and <kbd>rule</kbd> are literal strings.
+        <kbd>m</kbd> and <kbd>n</kbd> are numbers giving the width and height of
+        the pattern, respectively. <kbd>Baaa/Sbbb</kbd> is the rule's
+        designation in the form birth-rule/survival rule. <kbd>aaa</kbd> and
+        <kbd>bbb</kbd> are strings of digits from 0 to 8 while <kbd>B</kbd> and
+        <kbd>S</kbd> are literal characters.
+      </p>
+      <p>
+        The <kbd>rule</kbd> part may be omitted, in which case the comma
+        preceding it is also omitted. Where no rule is given <a
+          href="http://www.conwaylife.com/wiki/Conway%27s_Game_of_Life"
+        >Conway's Life</a> (B3/S23) is assumed.
+      </p>
+      <h2>Pattern lines</h2>
+      <p>
+        A description of the pattern begins on the line following the header
+        line. It is encoded as a sequence if items of the form
+      </p>
+      <pre class="indent">&lt;run_count&gt;&lt;tag&gt;</pre>
+      </p>
+      <p>
+        &lt;tag&gt; is one of the following:
+      </p>
+      <dl>
+        <dt><kbd>b</kbd></dt>
+        <dd>a dead cell</dd>
+        <dt><kbd>o</kbd></dt>
+        <dd>a live cell</dd>
+        <dt><kbd>$</kbd></dt>
+        <dd>end of a line of the pattern</dd>
+      </dl>
+      <p>
+        <kbd>&lt;run_count&gt;</kbd> is the number of occurrences of &lt;tag&gt;
+        and can be omitted if is equal to 1.
+      </p>
+      <p>
+        The last &lt;run_count&gt;&lt;tag&gt; pair is followed by a <kbd>!</kbd>
+        character. Dead cells at the end of a pattern line do not need to be
+        encoded and neither does the end of the last line of the pattern.
+      </p>
+      <p>
+        Whitespace is permitted between &lt;run_count&gt;&lt;tag&gt; items and
+        before the terminating <kbd>!</kbd>. It is not permitted to place
+        whitespace in the middle of a &lt;run_count&gt;&lt;tag&gt; item,
+        although readers should be able to handle this.
+      </p>
+      <h2>Comments</h2>
+      <p>
+        Anything after the final <kbd>!</kbd> is ignored and can be used for
+        comments. However <kbd>#C</kbd> lines are more usually used for this
+        purpose (see above).
+      </p>
+    </section>
+    <section>
       <h1>Life 1.05 Format</h1>
       <p>
         This file is in text format <mark title="query this">(ASCII?)</mark>.
