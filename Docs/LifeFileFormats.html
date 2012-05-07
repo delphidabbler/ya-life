@@ -36,11 +36,11 @@
   </head>
 
   <body>
-  
+
     <header>
       Cellular Automata File Formats
     </header>
-  
+
     <section>
       <h1>Contents</h1>
       <ul>
@@ -51,7 +51,7 @@
           <a href="#rle">Run Length Encoded (RLE)</a>
         </li>
         <li>
-          <a href="#life-105">Life 1.05</a>
+          <a href="#life-105">Life 1.05 &amp; XLife 2.0</a>
         </li>
         <li>
           <a href="#life-106">Life 1.06</a>
@@ -61,7 +61,7 @@
         </li>
       </ul>
     </section>
-    
+
     <section id="intro">
       <h1>Introduction</h1>
       <p>
@@ -75,7 +75,7 @@
         >Cellular Automata file formats</a> page.
       </p>
     </section>
-    
+
     <section id="rle">
       <h1>Run Length Encoded (RLE)</h1>
       <p>
@@ -127,7 +127,7 @@
         <dt><kbd>P</kbd></dt>
         <dd>
           <div>
-            Essentially the same as <kbd>R</kbd>, below. Coordinates 
+            Essentially the same as <kbd>R</kbd>, below. Coordinates
             representing the top-left corner of the Life pattern.
             <mark title="Clarify this">Relative to top left of grid?</mark>
             Example:
@@ -201,8 +201,8 @@
       </p>
       <p>
         Whitespace is permitted between <kbd>&lt;run_count&gt;&lt;tag&gt;</kbd>
-        items and before the terminating <kbd>!</kbd>. It is not permitted to 
-        place whitespace in the middle of a 
+        items and before the terminating <kbd>!</kbd>. It is not permitted to
+        place whitespace in the middle of a
         <kbd>&lt;run_count&gt;&lt;tag&gt;</kbd> item, although readers should be
         able to handle this.
       </p>
@@ -213,13 +213,19 @@
         purpose (see above).
       </p>
     </section>
-    
+
     <section id="life-105">
-      <h1>Life 1.05</h1>
+      <h1>Life 1.05 &amp; XLife 2.0</h1>
       <p>
-        This file is in ASCII text format. Lines may not exceed 80 characters.
+        The XLife 2.0 file format is closely related to Life 1.05 and differs
+        from it only slightly. The following text describes Life 1.05 with any
+        differences in XLife 2.0 noted.
+      </p>
+      <p>
+        This is an ASCII text format. Lines may not exceed 80 characters.
         End of line is denoted by the MS-DOS / Windows format of CR followed by
-        LF. Files usually have the <kbd>.LIF</kbd> extension.
+        LF. Files usually have the <kbd>.LIF</kbd> extension or <kbd>.life</kbd>
+        for XLife 2.0.
       </p>
       <p>
         The first line of the file is a header that identifies the format. It
@@ -236,9 +242,9 @@
       </aside>
       <p>
         After the header are optional description lines which begin with
-        <kbd>#D</kbd> and are followed by no more than 78 characters of text.
-        Leading and trailing spaces are ignored. For example, the following two
-        lines are equivalent:
+        <kbd>#D</kbd> in Life 1.05 or <kbd>#C</kbd> in XLife 2.0. This is
+        followed by no more than 78 characters of text. Leading and trailing
+        spaces are ignored. For example, the following two lines are equivalent:
       </p>
       <pre class="indent">#D Lorem ipsum dolor sit amet
 #D    Lorem ipsum dolor sit amet</pre>
@@ -247,7 +253,7 @@
         file.
       </p>
       <p>
-        Next comes an optional rule specification.  If no rules are specified
+        Next comes an optional rule specification. If no rules are specified
         the pattern will run with whatever rule the Life program is currently
         using. There are two forms of the rule specification:
       </p>
@@ -299,16 +305,11 @@
         There is no limit to the number of lines in a cell block, but the file's
         80 character width limit applies to the row width.
       </p>
-      <h2>Xlife compatibility</h2>
-      <p>
-        Xlife recognizes the symbol <kbd>#C</kbd> (for <kbd>C</kbd>omment)
-        instead of <kbd>#D</kbd>.
-      </p>
       <p>
         The default extension is <kbd>.life</kbd> instead of <kbd>.LIF</kbd>.
       </p>
     </section>
-    
+
     <section id="life-106">
       <h1>Life 1.06</h1>
       <p>
@@ -329,7 +330,7 @@
         form <kbd>x&nbsp;y</kbd>. Each coordinate is placed on its own line.
       </p>
     </section>
-    
+
     <section id="plaintext">
       <h1>Plaintext</h1>
       <p>
