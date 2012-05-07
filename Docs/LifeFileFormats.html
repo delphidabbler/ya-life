@@ -23,17 +23,40 @@
   </head>
 
   <body>
+  
     <section>
+      <h1>Contents</h1>
+      <ul>
+        <li>
+          <a href="#intro">Introduction</a>
+        </li>
+        <li>
+          <a href="#rle">Run Length Encoded (RLE)</a>
+        </li>
+        <li>
+          <a href="#life-105">Life 1.05</a>
+        </li>
+        <li>
+          <a href="#life-106">Life 1.06</a>
+        </li>
+      </ul>
+    </section>
+    
+    <section id="intro">
       <h1>Introduction</h1>
       <p>
         This document describes the various file formats used for Game of Life
         and Life-like programs.
       </p>
       <p>
-        Contents was assembled from various parts of the internet.
+        Content was assembled from various parts of the internet. Some was
+        copied or modified from the MCell <a
+          href="http://psoup.math.wisc.edu/mcell/ca_files_formats.html"
+        >Cellular Automata file formats</a> page.
       </p>
     </section>
-    <section>
+    
+    <section id="rle">
       <h1>Run Length Encoded (RLE)</h1>
       <p>
         This file is in text format. Lines must not exceed 70 characters
@@ -168,8 +191,9 @@
         purpose (see above).
       </p>
     </section>
-    <section>
-      <h1>Life 1.05 Format</h1>
+    
+    <section id="life-105">
+      <h1>Life 1.05</h1>
       <p>
         This file is in ASCII text format. Lines may not exceed 80 characters.
         End of line is denoted by the MS-DOS / Windows format of CR followed by
@@ -262,5 +286,28 @@
         The default extension is <kbd>.life</kbd> instead of <kbd>.LIF</kbd>.
       </p>
     </section>
+    
+    <section id="life-106">
+      <h1>Life 1.06</h1>
+      <p>
+        This is an ASCII file format that simply lists the coordinates of the
+        alive cells.
+      </p>
+      <aside>
+        <p>
+          File size can be very large for large patterns.
+        </p>
+      </aside>
+      <p>
+        The file begins with the following header line:
+      </p>
+      <pre class="ident">#Life 1.06</pre>
+      <p>
+        Immediately after the header is the list of cell coordinates in the
+        form <kbd>x&nbsp;y</kbd>. Each coordinate is placed on its own line.
+        line, in the format:
+      </p>
+    </section>
+    
   </body>
 </html>
