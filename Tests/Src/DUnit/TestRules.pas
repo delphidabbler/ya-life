@@ -26,6 +26,7 @@ type
   published
     procedure TestSetConstructor;
     procedure TestRuleStringConstructor;
+    procedure TestNulConstructor;
     procedure TestApply;
     procedure TestToString;
     procedure TestToBSString;
@@ -38,7 +39,7 @@ begin
   R1 := TRule.Create([3, 6, 7, 8], [3, 4, 6, 7, 8]);
   R2 := TRule.Create([2], []);
   R3 := TRule.Create([], [6, 4, 2]);
-  R4 := TRule.Create([], []);
+  R4 := TRule.Create;
   R5 := TRule.Create([3], [2, 3]);
 end;
 
@@ -61,6 +62,19 @@ begin
   Check(R1.Apply(csOn, 4) = csOn, 'Test 1.2');
   Check(R1.Apply(csOff, 1) = csOff, 'Test 1.3');
   Check(R1.Apply(csOff, 6) = csOn, 'Test 1.4');
+end;
+
+procedure TestTRule.TestNulConstructor;
+var
+  R: TRule;
+begin
+  R := TRule.Create;
+  try
+    Check(R.BirthCriteria = [], 'Test a');
+    Check(R.SurvivalCriteria = [], 'Test b');
+  finally
+    R.Free;
+  end;
 end;
 
 procedure TestTRule.TestRuleStringConstructor;

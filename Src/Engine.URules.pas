@@ -22,6 +22,9 @@ type
     ///  <remarks>Rule must use either S/B or "B"{list}/"S"{list} format.
     ///  See http://www.conwaylife.com/wiki/Rulestring#Rules.</remarks>
     constructor Create(const RuleString: string); overload;
+    ///  <summary>Constructs a null rule that has empty birth and survival
+    ///  criteria.</summary>
+    constructor Create; overload;
     ///  <summary>Applies rule for given cell state and neighbour count and
     ///  returns new cell state.</summary>
     function Apply(const CellState: TCellState;
@@ -62,6 +65,11 @@ begin
         Result := csOn;
     end;
   end;
+end;
+
+constructor TRule.Create;
+begin
+  Create([], []);
 end;
 
 constructor TRule.Create(const RuleString: string);
