@@ -26,6 +26,7 @@ type
     function GetState(X, Y: UInt16): TCellState;
     procedure SetState(X, Y: UInt16; NewState: TCellState);
     procedure Initialise;
+    function IsEqual(const AGrid: TGrid): Boolean;
     function Population: UInt32;
     function PatternBounds: TPatternBounds;
     property State[X, Y: UInt16]: TCellState read GetState write SetState;
@@ -65,6 +66,20 @@ begin
     for Y := 0 to Pred(fSize.CY) do
       fState[X, Y] := csOff;
   fPopulation := 0;
+end;
+
+function TGrid.IsEqual(const AGrid: TGrid): Boolean;
+var
+  X, Y: Integer;
+begin
+  // no need to check fPopulation since this stores redundant information
+  if fSize <> AGrid.fSize then
+    Exit(False);
+  for X := 0 to Pred(fSize.CX) do
+    for Y := 0 to Pred(fSize.CY) do
+      if fState[X,Y] <> AGrid.fState[X,Y] then
+        Exit(False);
+  Result := True;
 end;
 
 function TGrid.PatternBounds: TPatternBounds;

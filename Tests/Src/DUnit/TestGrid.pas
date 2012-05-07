@@ -17,7 +17,7 @@ uses
 type
   TestTGrid = class(TTestCase)
   strict private
-    fGrid0, fGrid37x51: TGrid;
+    fGrid0, fGrid0a, fGrid37x51, fGrid37x51a, fGrid4x4: TGrid;
     function IsZero(G: TGrid): Boolean;
   public
     procedure SetUp; override;
@@ -28,6 +28,7 @@ type
     procedure TestInitialise;
     procedure TestPopulation;
     procedure TestPatternBounds;
+    procedure TestIsEqual;
   end;
 
 implementation
@@ -46,14 +47,22 @@ end;
 procedure TestTGrid.SetUp;
 begin
   fGrid0 := TGrid.Create;
+  fGrid0a := TGrid.Create;
   fGrid37x51 := TGrid.Create;
   fGrid37x51.SetSize(TSizeEx.Create(37,51));
+  fGrid37x51a := TGrid.Create;
+  fGrid37x51a.SetSize(TSizeEx.Create(37, 51));
+  fGrid4x4 := TGrid.Create;
+  fGrid4x4.SetSize(TSizeEx.Create(4, 4));
 end;
 
 procedure TestTGrid.TearDown;
 begin
   fGrid0.Free;
+  fGrid0a.Free;
   fGrid37x51.Free;
+  fGrid37x51a.Free;
+  fGrid4x4.Free;
 end;
 
 procedure TestTGrid.TestInitialise;
@@ -69,6 +78,38 @@ begin
   CheckFalse(IsZero(fGrid37x51), 'Test Size 1');
   fGrid37x51.Size := TSizeEx.Create(14, 7);
   CheckTrue(IsZero(fGrid37x51), 'Test Size 2');
+end;
+
+procedure TestTGrid.TestIsEqual;
+begin
+  fGrid37x51.Initialise;
+  fGrid37x51[16,19] := csOn;
+  fGrid37x51[19,18] := csOn;
+  fGrid37x51[14,17] := csOn;
+  fGrid37x51a.Initialise;
+  fGrid37x51a[16,19] := csOn;
+  fGrid37x51a[19,18] := csOn;
+  fGrid37x51a[14,17] := csOn;
+  CheckTrue(fGrid37x51.IsEqual(fGrid37x51a), 'Test 1a');
+  CheckTrue(fGrid37x51a.IsEqual(fGrid37x51), 'Test 1b');
+
+  fGrid37x51a[14,17] := csOff;
+  CheckFalse(fGrid37x51.IsEqual(fGrid37x51a), 'Test 2a');
+  CheckFalse(fGrid37x51a.IsEqual(fGrid37x51), 'Test 2b');
+
+  fGrid37x51.Initialise;
+  fGrid37x51[1,1] := csOn;
+  fGrid4x4.Initialise;
+  fGrid4x4[1,1] := csOn;
+  CheckFalse(fGrid4x4.IsEqual(fGrid37x51), 'Test 3');
+
+  CheckFalse(fGrid37x51.IsEqual(fGrid0), 'Test 4');
+
+  CheckTrue(fGrid0.IsEqual(fGrid0a), 'Test 5');
+
+  fGrid37x51.Size := TSizeEx.Create(4,4);
+  fGrid37x51[1,1] := csOn;
+  CheckTrue(fGrid4x4.IsEqual(fGrid37x51), 'Test 6');
 end;
 
 procedure TestTGrid.TestPatternBounds;
