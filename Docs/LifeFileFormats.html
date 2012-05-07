@@ -25,6 +25,13 @@
         font-style: italic;
         text-align: center;
       }
+      footer {
+        font-size: 80%;
+        font-weight: normal;
+        font-style: italic;
+        border-top: 1px silver solid;
+        padding-top: 0.25em;
+      }
     </style>
   </head>
 
@@ -320,7 +327,6 @@
       <p>
         Immediately after the header is the list of cell coordinates in the
         form <kbd>x&nbsp;y</kbd>. Each coordinate is placed on its own line.
-        line, in the format:
       </p>
     </section>
     
@@ -360,16 +366,21 @@
         &quot;o&quot;) for an &quot;on&quot; cell.
       </p>
       <p>
-        Any trailing &quot;off&quot; cells may be omitted from a line.
+        Any trailing &quot;off&quot; cells may be omitted from a line. Blank
+        rows are indicated by blank lines.
       </p>
       <aside>
         <p>
-          Given that this format is based on Life 1.05, it can be assumed that
-          a single <kbd>.</kbd> on a line on its own represents a blank row.
-          It may also be safe to treat a blank line as a blank row.
+          Given that this format is based on Life 1.05, it may be safe to treat
+          a single <kbd>.</kbd> (dot) on a line on its own as a blank row.
         </p>
       </aside>
     </section>
-    
+
+    <footer>
+      Copyright &copy; 2012, Peter Johnson <a
+        href="http://www.delphidabbler.com/"
+      >www.delphidabbler.com</a>.
+    </footer>
   </body>
 </html>
