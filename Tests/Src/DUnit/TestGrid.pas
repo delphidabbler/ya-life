@@ -29,6 +29,7 @@ type
     procedure TestPopulation;
     procedure TestPatternBounds;
     procedure TestIsEqual;
+    procedure TestAssign;
   end;
 
 implementation
@@ -63,6 +64,32 @@ begin
   fGrid37x51.Free;
   fGrid37x51a.Free;
   fGrid4x4.Free;
+end;
+
+procedure TestTGrid.TestAssign;
+var
+  G: TGrid;
+begin
+  // used TGrid.IsEqual in tests, so run this test after IsEqual is tested
+  fGrid4x4[1,1] := csOn;
+  fGrid37x51[16,19] := csOn;
+  fGrid37x51[19,18] := csOn;
+  fGrid37x51[14,17] := csOn;
+  G := TGrid.Create;
+  try
+    G.Assign(fGrid37x51);
+    CheckTrue(fGrid37x51.IsEqual(G), 'Test 1a');
+    CheckEquals(G.Population, fGrid37x51.Population, 'Test 1b');
+    G.Assign(fGrid4x4);
+    CheckTrue(G.IsEqual(fGrid4x4), 'Test 2a');
+    CheckEquals(G.Population, fGrid4x4.Population, 'Test 2b');
+    fGrid4x4[1,2] := csOn;
+    CheckFalse(G.IsEqual(fGrid4x4), 'Test 3');
+    G.Assign(fGrid0);
+    CheckTrue(G.IsEqual(fGrid0), 'Test 4');
+  finally
+    G.Free;
+  end;
 end;
 
 procedure TestTGrid.TestInitialise;

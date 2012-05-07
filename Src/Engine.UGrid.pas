@@ -27,6 +27,7 @@ type
     procedure SetState(X, Y: UInt16; NewState: TCellState);
     procedure Initialise;
     function IsEqual(const AGrid: TGrid): Boolean;
+    procedure Assign(const AGrid: TGrid);
     function Population: UInt32;
     function PatternBounds: TPatternBounds;
     property State[X, Y: UInt16]: TCellState read GetState write SetState;
@@ -40,6 +41,18 @@ uses
   Math;
 
 { TGrid }
+
+procedure TGrid.Assign(const AGrid: TGrid);
+var
+  X, Y: Integer;
+begin
+  Assert(Assigned(AGrid));
+  ChangeSize(AGrid.fSize);
+  fPopulation := AGrid.fPopulation;
+  for X := 0 to Pred(fSize.CX) do
+    for Y := 0 to Pred(fSize.CY) do
+      fState[X,Y] := AGrid.fState[X,Y];
+end;
 
 procedure TGrid.ChangeSize(const NewSize: TSizeEx);
 begin
@@ -72,7 +85,6 @@ function TGrid.IsEqual(const AGrid: TGrid): Boolean;
 var
   X, Y: Integer;
 begin
-  // no need to check fPopulation since this stores redundant information
   if fSize <> AGrid.fSize then
     Exit(False);
   for X := 0 to Pred(fSize.CX) do
@@ -80,6 +92,8 @@ begin
       if fState[X,Y] <> AGrid.fState[X,Y] then
         Exit(False);
   Result := True;
+  // Polulations should match: they redundant information so not tested above
+  Assert(fPopulation = AGrid.fPopulation);
 end;
 
 function TGrid.PatternBounds: TPatternBounds;
