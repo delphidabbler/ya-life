@@ -6,6 +6,9 @@ uses
   Engine.UCommon;
 
 type
+  ///  <summary>Encapsulates rules for birth and survival of life-like cellular
+  ///  automata.</summary>
+  ///  <remarks>This class is invariant.</remarks>
   TRule = class(TObject)
   strict private
     var
@@ -22,9 +25,14 @@ type
     ///  <remarks>Rule must use either S/B or "B"{list}/"S"{list} format.
     ///  See http://www.conwaylife.com/wiki/Rulestring#Rules.</remarks>
     constructor Create(const RuleString: string); overload;
+    ///  <summary>Clone constructor: creates one rule that is a copy of another.
+    ///  </summary>
+    constructor Create(const ARule: TRule); overload;
     ///  <summary>Constructs a null rule that has empty birth and survival
     ///  criteria.</summary>
     constructor Create; overload;
+    ///  <summary>Checks if another rule is the same.</summary>
+    function IsEqual(const ARule: TRule): Boolean;
     ///  <summary>Applies rule for given cell state and neighbour count and
     ///  returns new cell state.</summary>
     function Apply(const CellState: TCellState;
@@ -72,6 +80,11 @@ begin
   Create([], []);
 end;
 
+constructor TRule.Create(const ARule: TRule);
+begin
+  Create(ARule.fBirthCriteria, ARule.fSurvivalCriteria);
+end;
+
 constructor TRule.Create(const RuleString: string);
 var
   Part1, Part2: string;
@@ -108,6 +121,12 @@ begin
   inherited Create;
   fBirthCriteria := BirthCriteria;
   fSurvivalCriteria := SurvivalCriteria;
+end;
+
+function TRule.IsEqual(const ARule: TRule): Boolean;
+begin
+  Result := (fBirthCriteria = ARule.fBirthCriteria)
+    and (fSurvivalCriteria = ARule.fSurvivalCriteria);
 end;
 
 function TRule.RuleSetToString(const RuleSet: TNeighbourCounts): string;
