@@ -19,10 +19,20 @@
       h2 {
         font-size: 150%;
       }
+      header {
+        font-size: 200%;
+        font-weight: bold;
+        font-style: italic;
+        text-align: center;
+      }
     </style>
   </head>
 
   <body>
+  
+    <header>
+      Cellular Automata File Formats
+    </header>
   
     <section>
       <h1>Contents</h1>
@@ -39,13 +49,16 @@
         <li>
           <a href="#life-106">Life 1.06</a>
         </li>
+        <li>
+          <a href="#plaintext">Plaintext</a>
+        </li>
       </ul>
     </section>
     
     <section id="intro">
       <h1>Introduction</h1>
       <p>
-        This document describes the various file formats used for Game of Life
+        This document describes some of the file formats used for Game of Life
         and Life-like programs.
       </p>
       <p>
@@ -84,7 +97,7 @@
           <div>
             Indicates that a line of comment follows. Example:
           </div>
-          <pre class="indent">#C 'Twas brillig and the slithy toves</pre>
+          <pre class="indent">#C Lorem ipsum dolor sit amet</pre>
         </dd>
         <dt><kbd>c</kbd>
         <dd>
@@ -95,14 +108,14 @@
           <div>
             The name of the pattern. Example:
           </div>
-          <pre class="indent">#N My awesome pattern</pre>
+          <pre class="indent">#N My pattern</pre>
         </dd>
         <dt><kbd>O</kbd></dt>
         <dd>
           <div>
             Says when and by whom the file was created. Example:
           </div>
-          <pre class="indent">#O John Smith john@gmail.com Fri Apr 30 19:38:52 1999</pre>
+          <pre class="indent">#O John Smith john.smith@example.com Fri Apr 30 19:38:52 2012</pre>
         </dd>
         <dt><kbd>P</kbd></dt>
         <dd>
@@ -170,19 +183,21 @@
         <dd>end of a line of the pattern</dd>
       </dl>
       <p>
-        <kbd>&lt;run_count&gt;</kbd> is the number of occurrences of &lt;tag&gt;
-        and can be omitted if is equal to 1.
+        <kbd>&lt;run_count&gt;</kbd> is the number of occurrences of
+        <kbd>&lt;tag&gt;</kbd> and can be omitted if is equal to 1.
       </p>
       <p>
-        The last &lt;run_count&gt;&lt;tag&gt; pair is followed by a <kbd>!</kbd>
-        character. Dead cells at the end of a pattern line do not need to be
-        encoded and neither does the end of the last line of the pattern.
+        The last <kbd>&lt;run_count&gt;&lt;tag&gt;</kbd> pair is followed by a
+        <kbd>!</kbd> character. Dead cells at the end of a pattern line do not
+        need to be encoded and neither does the end of the last line of the
+        pattern.
       </p>
       <p>
-        Whitespace is permitted between &lt;run_count&gt;&lt;tag&gt; items and
-        before the terminating <kbd>!</kbd>. It is not permitted to place
-        whitespace in the middle of a &lt;run_count&gt;&lt;tag&gt; item,
-        although readers should be able to handle this.
+        Whitespace is permitted between <kbd>&lt;run_count&gt;&lt;tag&gt;</kbd>
+        items and before the terminating <kbd>!</kbd>. It is not permitted to 
+        place whitespace in the middle of a 
+        <kbd>&lt;run_count&gt;&lt;tag&gt;</kbd> item, although readers should be
+        able to handle this.
       </p>
       <h2>Comments</h2>
       <p>
@@ -218,8 +233,8 @@
         Leading and trailing spaces are ignored. For example, the following two
         lines are equivalent:
       </p>
-      <pre class="indent">#D This is a Description line
-#D    This is a Description line</pre>
+      <pre class="indent">#D Lorem ipsum dolor sit amet
+#D    Lorem ipsum dolor sit amet</pre>
       <p>
         There should be no more than 22 <kbd>#D</kbd>  lines in the
         file.
@@ -307,6 +322,53 @@
         form <kbd>x&nbsp;y</kbd>. Each coordinate is placed on its own line.
         line, in the format:
       </p>
+    </section>
+    
+    <section id="plaintext">
+      <h1>Plaintext</h1>
+      <p>
+        This is an ASCII file format with no restriction on line length.
+      </p>
+      <p>
+        The file begins with comment lines which begin with <kbd>!</kbd>. Some
+        command lines are special and begin with a &quot;keyword&quot;. These
+        are:
+      </p>
+      <dl>
+        <dt><kbd>!Name:</kbd></dt>
+        <dd>
+          <div>The name of the pattern. For example:</div>
+          <pre class="indent">!Name: My pattern</pre>
+        </dd>
+        <dt><kbd>!Author:</kbd></dt>
+        <dd>
+          <div>The name of the pattern author. For example:</div>
+          <pre class="indent">!Author: John Smith</pre>
+        </dd>
+      </dl>
+      <p>
+        All other comment lines are read literally. For example:
+      </p>
+      <pre class="indent">! Lorem ipsum dolor sit amet</pre>
+      <p>
+        Empty comment lines, with just a single <kbd>!</kbd> are permitted.
+      </p>
+      <p>
+        The description of the pattern follows the last comment line. Each line
+        of the file describes a row of the pattern with a <kbd>.</kbd> (dot)
+        representing an &quot;off&quot; cell and an <kbd>O</kbd> (capital letter
+        &quot;o&quot;) for an &quot;on&quot; cell.
+      </p>
+      <p>
+        Any trailing &quot;off&quot; cells may be omitted from a line.
+      </p>
+      <aside>
+        <p>
+          Given that this format is based on Life 1.05, it can be assumed that
+          a single <kbd>.</kbd> on a line on its own represents a blank row.
+          It may also be safe to treat a blank line as a blank row.
+        </p>
+      </aside>
     </section>
     
   </body>
