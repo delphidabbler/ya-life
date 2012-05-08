@@ -32,6 +32,8 @@ type
     procedure TestIsEqual;
     procedure TestAssign;
     procedure TestOrigin;
+    procedure TestGridToUniverseCoord;
+    procedure TestUniverseToGridCoord;
   end;
 
 implementation
@@ -89,6 +91,28 @@ begin
     CheckFalse(G.IsEqual(fGrid4x4), 'Test 3');
     G.Assign(fGrid0);
     CheckTrue(G.IsEqual(fGrid0), 'Test 4');
+  finally
+    G.Free;
+  end;
+end;
+
+procedure TestTGrid.TestGridToUniverseCoord;
+var
+  UC: TPoint;
+  G: TGrid;
+begin
+  G := TGrid.Create;
+  try
+    G.Size := TSizeEx.Create(17, 12); // origin = (8, 6)
+    UC := G.GridToUniverseCoord(Point(0, 0));
+    CheckEquals(-8, UC.X, 'Test 1 X');
+    CheckEquals(-6, UC.Y, 'Test 1 Y');
+    UC := G.GridToUniverseCoord(Point(16, 11));
+    CheckEquals(+8, UC.X, 'Test 2 X');
+    CheckEquals(+5, UC.Y, 'Test 2 Y');
+    UC := G.GridToUniverseCoord(Point(8, 6));
+    CheckEquals(0, UC.X, 'Test 3 X');
+    CheckEquals(0, UC.Y, 'Test 3 Y');
   finally
     G.Free;
   end;
@@ -394,6 +418,28 @@ begin
   CheckTrue(fGrid4x4[2,3] = fGrid4x4.StateByPt[Point(2,3)], 'Test 3');
   fGrid4x4[2,3] := csOff;
   CheckTrue(fGrid4x4[2,3] = fGrid4x4.StateByPt[Point(2,3)], 'Test 4');
+end;
+
+procedure TestTGrid.TestUniverseToGridCoord;
+var
+  GC: TPoint;
+  G: TGrid;
+begin
+  G := TGrid.Create;
+  try
+    G.Size := TSizeEx.Create(17, 12); // origin = (8, 6)
+    GC := G.UniverseToGridCoord(Point(0, 0));
+    CheckEquals(8, GC.X, 'Test 1 X');
+    CheckEquals(6, GC.Y, 'Test 1 Y');
+    GC := G.UniverseToGridCoord(Point(-8, -6));
+    CheckEquals(0, GC.X, 'Test 2 X');
+    CheckEquals(0, GC.Y, 'Test 2 Y');
+    GC := G.UniverseToGridCoord(Point(8, 5));
+    CheckEquals(16, GC.X, 'Test 3 X');
+    CheckEquals(11, GC.Y, 'Test 3 Y');
+  finally
+    G.Free;
+  end;
 end;
 
 initialization

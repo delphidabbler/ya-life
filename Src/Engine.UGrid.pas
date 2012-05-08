@@ -36,6 +36,8 @@ type
     function GetStateByPt(const Pt: TPoint): TCellState;
     procedure SetStateByPt(const Pt: TPoint; NewState: TCellState);
     function Origin: TPoint;
+    function GridToUniverseCoord(const GridCoord: TPoint): TPoint;
+    function UniverseToGridCoord(const UniverseCoord: TPoint): TPoint;
     procedure Initialise;
     function IsEqual(const AGrid: TGrid): Boolean;
     procedure Assign(const AGrid: TGrid);
@@ -90,6 +92,14 @@ begin
   Result := GetState(Pt.X, Pt.Y);
 end;
 
+function TGrid.GridToUniverseCoord(const GridCoord: TPoint): TPoint;
+var
+  O: TPoint;
+begin
+  O := Origin;
+  Result := Point(GridCoord.X - O.X, GridCoord.Y - O.Y);
+end;
+
 procedure TGrid.Initialise;
 var
   X, Y: Integer;  // loop control: don't use UInt16
@@ -118,9 +128,7 @@ end;
 function TGrid.Origin: TPoint;
 begin
   Assert(not Size.IsZero);
-  Result := Point(
-    fSize.CX div 2, fSize.CY div 2
-  );
+  Result := Point(fSize.CX div 2, fSize.CY div 2);
 end;
 
 function TGrid.PatternBounds: TPatternBounds;
@@ -247,6 +255,14 @@ procedure TGrid.SetStateByPt(const Pt: TPoint; NewState: TCellState);
 begin
   Assert((Pt.X >= 0) and (Pt.Y >= 0));
   SetState(Pt.X, Pt.Y, NewState);
+end;
+
+function TGrid.UniverseToGridCoord(const UniverseCoord: TPoint): TPoint;
+var
+  O: TPoint;
+begin
+  O := Origin;
+  Result := Point(UniverseCoord.X + O.X, UniverseCoord.Y + O.Y);
 end;
 
 { TPatternBounds }
