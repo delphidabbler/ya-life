@@ -35,6 +35,7 @@ type
     procedure SetState(X, Y: UInt16; NewState: TCellState);
     function GetStateByPt(const Pt: TPoint): TCellState;
     procedure SetStateByPt(const Pt: TPoint; NewState: TCellState);
+    function Origin: TPoint;
     procedure Initialise;
     function IsEqual(const AGrid: TGrid): Boolean;
     procedure Assign(const AGrid: TGrid);
@@ -112,6 +113,14 @@ begin
   Result := True;
   // Populations should match: they redundant information so not tested above
   Assert(fPopulation = AGrid.fPopulation);
+end;
+
+function TGrid.Origin: TPoint;
+begin
+  Assert(not Size.IsZero);
+  Result := Point(
+    fSize.CX div 2, fSize.CY div 2
+  );
 end;
 
 function TGrid.PatternBounds: TPatternBounds;

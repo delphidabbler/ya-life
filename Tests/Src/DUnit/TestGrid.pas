@@ -31,6 +31,7 @@ type
     procedure TestPatternBounds;
     procedure TestIsEqual;
     procedure TestAssign;
+    procedure TestOrigin;
   end;
 
 implementation
@@ -138,6 +139,57 @@ begin
   fGrid37x51.Size := TSizeEx.Create(4,4);
   fGrid37x51[1,1] := csOn;
   CheckTrue(fGrid4x4.IsEqual(fGrid37x51), 'Test 6');
+end;
+
+procedure TestTGrid.TestOrigin;
+var
+  G: TGrid;
+  O: TPoint;
+begin
+  G := TGrid.Create;
+  try
+    G.Size := TSizeEx.Create(7, 11);
+    O := G.Origin;
+    CheckEquals(3, O.X, 'Test 1 X');
+    CheckEquals(5, O.Y, 'Test 1 Y');
+
+    G.Size := TSizeEx.Create(8, 12);
+    O := G.Origin;
+    CheckEquals(4, O.X, 'Test 2 X');
+    CheckEquals(6, O.Y, 'Test 2 Y');
+
+    G.Size := TSizeEx.Create(7, 8);
+    O := G.Origin;
+    CheckEquals(3, O.X, 'Test 3 X');
+    CheckEquals(4, O.Y, 'Test 3 Y');
+
+    G.Size := TSizeEx.Create(8, 7);
+    O := G.Origin;
+    CheckEquals(4, O.X, 'Test 4 X');
+    CheckEquals(3, O.Y, 'Test 4 Y');
+
+    G.Size := TSizeEx.Create(4, 4);
+    O := G.Origin;
+    CheckEquals(2, O.X, 'Test 5 X');
+    CheckEquals(2, O.Y, 'Test 5 Y');
+
+    G.Size := TSizeEx.Create(3, 3);
+    O := G.Origin;
+    CheckEquals(1, O.X, 'Test 6 X');
+    CheckEquals(1, O.Y, 'Test 6 Y');
+
+    G.Size := TSizeEx.Create(2, 2);
+    O := G.Origin;
+    CheckEquals(1, O.X, 'Test 7 X');
+    CheckEquals(1, O.Y, 'Test 7 Y');
+
+    G.Size := TSizeEx.Create(1, 1);
+    O := G.Origin;
+    CheckEquals(0, O.X, 'Test 8 X');
+    CheckEquals(0, O.Y, 'Test 8 Y');
+  finally
+    G.Free;
+  end;
 end;
 
 procedure TestTGrid.TestPatternBounds;
