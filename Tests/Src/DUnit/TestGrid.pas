@@ -25,6 +25,7 @@ type
   published
     procedure TestSize;
     procedure TestState;
+    procedure TestStateByPt;
     procedure TestInitialise;
     procedure TestPopulation;
     procedure TestPatternBounds;
@@ -328,6 +329,19 @@ begin
   CheckTrue(fGrid37x51[3,5] = csOn, 'Test 1');
   fGrid37x51[3,5] := csOff;
   CheckTrue(fGrid37x51[3,5] = csOff, 'Test 2');
+end;
+
+procedure TestTGrid.TestStateByPt;
+begin
+  // Uses State[] in tests so test after State[]
+  fGrid37x51.StateByPt[Point(3, 5)] := csOn;
+  CheckTrue(fGrid37x51[3,5] = csOn, 'Test 1');
+  fGrid37x51.StateByPt[Point(3, 5)] := csOff;
+  CheckTrue(fGrid37x51[3,5] = csOff, 'Test 2');
+  fGrid4x4[2,3] := csOn;
+  CheckTrue(fGrid4x4[2,3] = fGrid4x4.StateByPt[Point(2,3)], 'Test 3');
+  fGrid4x4[2,3] := csOff;
+  CheckTrue(fGrid4x4[2,3] = fGrid4x4.StateByPt[Point(2,3)], 'Test 4');
 end;
 
 initialization

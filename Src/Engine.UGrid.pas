@@ -33,6 +33,8 @@ type
     procedure SetSize(const NewSize: TSizeEx);
     function GetState(X, Y: UInt16): TCellState;
     procedure SetState(X, Y: UInt16; NewState: TCellState);
+    function GetStateByPt(const Pt: TPoint): TCellState;
+    procedure SetStateByPt(const Pt: TPoint; NewState: TCellState);
     procedure Initialise;
     function IsEqual(const AGrid: TGrid): Boolean;
     procedure Assign(const AGrid: TGrid);
@@ -40,6 +42,8 @@ type
     function PatternBounds: TPatternBounds;
     property State[X, Y: UInt16]: TCellState read GetState write SetState;
       default;
+    property StateByPt[const Pt: TPoint]: TCellState
+      read GetStateByPt write SetStateByPt;
     property Size: TSizeEx read fSize write SetSize;
   end;
 
@@ -77,6 +81,12 @@ function TGrid.GetState(X, Y: UInt16): TCellState;
 begin
   Assert((X < fSize.CX) and (Y < fSize.CY));
   Result := fState[X, Y];
+end;
+
+function TGrid.GetStateByPt(const Pt: TPoint): TCellState;
+begin
+  Assert((Pt.X >= 0) and (Pt.Y >= 0));
+  Result := GetState(Pt.X, Pt.Y);
 end;
 
 procedure TGrid.Initialise;
@@ -222,6 +232,12 @@ begin
         Dec(fPopulation);
   end;
   fState[X, Y] := NewState;
+end;
+
+procedure TGrid.SetStateByPt(const Pt: TPoint; NewState: TCellState);
+begin
+  Assert((Pt.X >= 0) and (Pt.Y >= 0));
+  SetState(Pt.X, Pt.Y, NewState);
 end;
 
 { TPatternBounds }
