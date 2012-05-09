@@ -11,7 +11,8 @@ uses
   Engine.UGrid in 'Engine.UGrid.pas',
   Engine.UCompressedGrid in 'Engine.UCompressedGrid.pas',
   UStructs in 'UStructs.pas',
-  Engine.UPattern in 'Engine.UPattern.pas';
+  Engine.UPattern in 'Engine.UPattern.pas',
+  UComparers in 'UComparers.pas';
 
 {$Resource Resources.res}
 {$Resource Version.res}

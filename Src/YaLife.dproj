@@ -45,6 +45,7 @@
 			<DCCReference Include="Engine.UCompressedGrid.pas"/>
 			<DCCReference Include="UStructs.pas"/>
 			<DCCReference Include="Engine.UPattern.pas"/>
+			<DCCReference Include="UComparers.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
