@@ -38,6 +38,9 @@
 			<DCCReference Include="TestStructs.pas"/>
 			<DCCReference Include="..\..\..\Src\Engine.UPattern.pas"/>
 			<DCCReference Include="TestPattern.pas"/>
+			<DCCReference Include="..\..\..\Src\Filters.URLE.pas"/>
+			<DCCReference Include="..\..\..\Src\UComparers.pas"/>
+			<DCCReference Include="TestRLEFilter.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

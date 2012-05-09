@@ -30,7 +30,10 @@ uses
   UStructs in '..\..\..\Src\UStructs.pas',
   TestStructs in 'TestStructs.pas',
   Engine.UPattern in '..\..\..\Src\Engine.UPattern.pas',
-  TestPattern in 'TestPattern.pas';
+  TestPattern in 'TestPattern.pas',
+  Filters.URLE in '..\..\..\Src\Filters.URLE.pas',
+  UComparers in '..\..\..\Src\UComparers.pas',
+  TestRLEFilter in 'TestRLEFilter.pas';
 
 {$R *.RES}
 
