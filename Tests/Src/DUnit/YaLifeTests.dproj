@@ -36,6 +36,8 @@
 			<DCCReference Include="TestCompressedGrid.pas"/>
 			<DCCReference Include="..\..\..\Src\UStructs.pas"/>
 			<DCCReference Include="TestStructs.pas"/>
+			<DCCReference Include="..\..\..\Src\Engine.UPattern.pas"/>
+			<DCCReference Include="TestPattern.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
