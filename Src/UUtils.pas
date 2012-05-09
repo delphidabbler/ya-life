@@ -4,11 +4,13 @@ interface
 
 function SplitStr(const S, Delim: string; out S1, S2: string): Boolean;
 
+function StripEOL(const S: string): string;
+
 implementation
 
 uses
   // Delphi
-  SysUtils;
+  SysUtils, StrUtils;
 
 function SplitStr(const S, Delim: string; out S1, S2: string): Boolean;
 var
@@ -30,6 +32,13 @@ begin
     S2 := '';
     Result := False;
   end;
+end;
+
+function StripEOL(const S: string): string;
+begin
+  Result := ReplaceStr(S, #13#10, ' ');
+  Result := ReplaceStr(Result, #13, ' ');
+  Result := ReplaceStr(Result, #10, ' ');
 end;
 
 end.
