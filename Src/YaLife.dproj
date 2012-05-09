@@ -46,6 +46,7 @@
 			<DCCReference Include="UStructs.pas"/>
 			<DCCReference Include="Engine.UPattern.pas"/>
 			<DCCReference Include="UComparers.pas"/>
+			<DCCReference Include="Filters.URLE.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -12,7 +12,8 @@ uses
   Engine.UCompressedGrid in 'Engine.UCompressedGrid.pas',
   UStructs in 'UStructs.pas',
   Engine.UPattern in 'Engine.UPattern.pas',
-  UComparers in 'UComparers.pas';
+  UComparers in 'UComparers.pas',
+  Filters.URLE in 'Filters.URLE.pas';
 
 {$Resource Resources.res}
 {$Resource Version.res}
