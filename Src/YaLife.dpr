@@ -14,7 +14,8 @@ uses
   Engine.UPattern in 'Engine.UPattern.pas',
   UComparers in 'UComparers.pas',
   Filters.URLE in 'Filters.URLE.pas',
-  Filters.UPlainText in 'Filters.UPlainText.pas';
+  Filters.UPlainText in 'Filters.UPlainText.pas',
+  Filters.ULife106 in 'Filters.ULife106.pas';
 
 {$Resource Resources.res}
 {$Resource Version.res}

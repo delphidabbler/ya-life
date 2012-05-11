@@ -48,6 +48,7 @@
 			<DCCReference Include="UComparers.pas"/>
 			<DCCReference Include="Filters.URLE.pas"/>
 			<DCCReference Include="Filters.UPlainText.pas"/>
+			<DCCReference Include="Filters.ULife106.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

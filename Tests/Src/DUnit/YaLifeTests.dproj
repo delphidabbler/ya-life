@@ -43,6 +43,8 @@
 			<DCCReference Include="TestRLEFilter.pas"/>
 			<DCCReference Include="..\..\..\Src\Filters.UPlainText.pas"/>
 			<DCCReference Include="TestPlainTextFilter.pas"/>
+			<DCCReference Include="..\..\..\Src\Filters.ULife106.pas"/>
+			<DCCReference Include="TestLife106Filter.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

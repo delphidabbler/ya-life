@@ -35,7 +35,9 @@ uses
   UComparers in '..\..\..\Src\UComparers.pas',
   TestRLEFilter in 'TestRLEFilter.pas',
   Filters.UPlainText in '..\..\..\Src\Filters.UPlainText.pas',
-  TestPlainTextFilter in 'TestPlainTextFilter.pas';
+  TestPlainTextFilter in 'TestPlainTextFilter.pas',
+  Filters.ULife106 in '..\..\..\Src\Filters.ULife106.pas',
+  TestLife106Filter in 'TestLife106Filter.pas';
 
 {$R *.RES}
 
