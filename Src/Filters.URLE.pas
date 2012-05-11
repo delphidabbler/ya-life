@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, Types, Generics.Collections,
-  Engine.UPattern;
+  Engine.UCommon, Engine.UPattern, Engine.UGrid;
 
 type
 
@@ -41,7 +41,51 @@ type
   end;
 
   TRLEWriter = class(TObject)
+  strict private
+    const
+      MaxLineLength = 70;
+      EOLTag = '$';
+      AliveTag = 'o';
+      DeadTag = 'b';
+      TerminalTag = '!';
+  strict private
+    type
+      TCompressionEntity = record
+        Tag: Char;
+        Count: UInt16;
+        constructor Create(ATag: Char; ACount: UInt16);
+        function ToString: string;
+      end;
+    type
+      TPatternCompressor = class(TObject)
+      strict private
+        var
+          fData: TList<TCompressionEntity>;
+          fGrid: TGrid;
+        function ValueToChar(const Value: Int8): Char;
+        function IsItemAtTopOfList(const Value: Int8): Boolean;
+        function CompressValueCount(const Value: Int8): UInt16;
+        procedure UpdateCount(const Value: Int8);
+      public
+        constructor Create(Grid: TGrid; Data: TList<TCompressionEntity>);
+        procedure Execute;
+      end;
+  strict private
+    var
+      fPattern: TPattern;
+      fLines: TStringList;
+    procedure Generate;
+    procedure GenerateHashLines;
+    procedure GenerateCommentLines(const Comment: string);
+    procedure GenerateHeaderLine;
+    procedure GeneratePatternLines;
+    procedure WriteLineRestricted(const Line: string);
   public
+    constructor Create;
+    destructor Destroy; override;
+    procedure SaveToFile(APattern: TPattern;
+      const AFileName: TFileName);
+    procedure SaveToStream(const APattern: TPattern; const AStream: TStream);
   end;
 
   ERLE = class(Exception);
@@ -49,11 +93,12 @@ type
 implementation
 
 uses
-  Engine.UCommon, Engine.URules, UComparers, UStructs, UUtils;
+  StrUtils, Math,
+  Engine.UCompressedGrid, Engine.URules, UComparers, UStructs, UUtils;
 
 {
-  Implementation notes
-  ====================
+  Implementation notes for reader
+  ===============================
 
   RLE file spec does not specify file encoding. It is probably ASCII, but we
   will assume default ANSI encoding.
@@ -110,6 +155,38 @@ uses
   Any text after closing ! is appended to any comments specified in #C or #c
   lines. Blank lines and any leading line break are ignored.
 
+  Implementation notes for writer
+  ===============================
+
+  Output is written in default ANSI encoding.
+  70 character line limit is imposed.
+
+  Hash lines
+  ----------
+
+  * Pattern name is stored in #N hash line (first line in output).
+  * Pattern author in #O hash line (2nd line in output).
+  * Pattern description is recorded in zero or more #C hash lines.
+  * Pattern offset stored in #P line only if pattern is centre-offset.
+
+  No other hash lines are used
+
+  Header line
+  -----------
+
+  Standard header line is used. Rule component will be included only if pattern
+  defines a rule.
+
+  Pattern lines
+  -------------
+
+  Whole of pattern grid is written with maximum possible compression with no
+  EOLs at end.
+
+  Text after closing !
+  --------------------
+
+  The closing ! tag is the last in the output. The is no following EOL or text.
 }
 
 { TRLEReader }
@@ -475,4 +552,235 @@ begin
   end;
 end;
 
+{ TRLEWriter }
+
+constructor TRLEWriter.Create;
+begin
+  inherited Create;
+  fLines := TStringList.Create;
+end;
+
+destructor TRLEWriter.Destroy;
+begin
+  fLines.Free;
+  inherited;
+end;
+
+procedure TRLEWriter.Generate;
+begin
+  fLines.Clear;
+  GenerateHashLines;
+  GenerateHeaderLine;
+  GeneratePatternLines;
+end;
+
+procedure TRLEWriter.GenerateCommentLines(const Comment: string);
+var
+  Comments: TStringList;
+  Line: string;
+begin
+  Comments := TStringList.Create;
+  try
+    Comments.Text := TextWrap(Trim(Comment), MaxLineLength - Length('#C '), 0);
+    for Line in Comments do
+      WriteLineRestricted('#C ' + Line);
+  finally
+    Comments.Free;
+  end;
+end;
+
+procedure TRLEWriter.GenerateHashLines;
+var
+  Comment: string;
+begin
+  if Trim(fPattern.Name) <> '' then
+    WriteLineRestricted('#N ' + Trim(fPattern.Name));
+  if Trim(fPattern.Author) <> '' then
+    WriteLineRestricted('#O ' + Trim(fPattern.Author));
+  if Trim(fPattern.Description.Text) <> '' then
+  begin
+    for Comment in fPattern.Description do
+      GenerateCommentLines(Comment);
+  end;
+  if fPattern.Origin = poCentreOffset then
+    fLines.Add(Format('#R %d %d', [fPattern.Offset.X, fPattern.Offset.Y]));
+end;
+
+procedure TRLEWriter.GenerateHeaderLine;
+var
+  Line: string;
+begin
+  Line := Format(
+    'x = %d, y = %d', [fPattern.Grid.Size.CX, fPattern.Grid.Size.CY]
+  );
+  if Assigned(fPattern.Rule) then
+    Line := Line + ', rule = ' + fPattern.Rule.ToString;
+  fLines.Add(Line);
+end;
+
+procedure TRLEWriter.GeneratePatternLines;
+var
+  Entities: TList<TCompressionEntity>;
+  Entity: TCompressionEntity;
+  Compressor: TPatternCompressor;
+  Line: string;
+
+  procedure AppendToOutput(const Text: string);
+  begin
+    if Length(Text) + Length(Line) > MaxLineLength then
+    begin
+      fLines.Add(Line);
+      Line := Text;
+    end
+    else
+      Line := Line + Text;
+  end;
+
+begin
+  Entities := TList<TCompressionEntity>.Create;
+  try
+    Compressor := TPatternCompressor.Create(fPattern.Grid, Entities);
+    try
+      Compressor.Execute;
+    finally
+      Compressor.Free;
+    end;
+    Line := '';
+    for Entity in Entities do
+      AppendToOutput(Entity.ToString);
+    AppendToOutput(TerminalTag);
+    fLines.Add(Line);
+  finally
+    Entities.Free;
+  end;
+end;
+
+procedure TRLEWriter.SaveToFile(APattern: TPattern; const AFileName: TFileName);
+var
+  Stm: TFileStream;
+begin
+  Stm := TFileStream.Create(AFileName, fmCreate);
+  try
+    SaveToStream(APattern, Stm);
+  finally
+    Stm.Free;
+  end;
+end;
+
+procedure TRLEWriter.SaveToStream(const APattern: TPattern;
+  const AStream: TStream);
+var
+  Bytes: TBytes;
+begin
+  fPattern := APattern;
+  Generate;
+  Bytes := TEncoding.Default.GetBytes(Trim(fLines.Text));
+  if Length(Bytes) > 0 then
+    AStream.WriteBuffer(Pointer(Bytes)^, Length(Bytes));
+end;
+
+procedure TRLEWriter.WriteLineRestricted(const Line: string);
+const
+  Ellipsis = '...';
+begin
+  if Length(Line) <= MaxLineLength then
+    fLines.Add(Line)
+  else
+    fLines.Add(LeftStr(Line, MaxLineLength - Length(Ellipsis)) + Ellipsis);
+end;
+
+{ TRLEWriter.TPatternCompressor }
+
+function TRLEWriter.TPatternCompressor.CompressValueCount(
+  const Value: Int8): UInt16;
+begin
+  if Sign(Value) = NegativeValue then
+    Result := -Value
+  else if Sign(Value) = PositiveValue then
+    Result := Value
+  else // ZeroValue
+    Result := 1;
+end;
+
+constructor TRLEWriter.TPatternCompressor.Create(Grid: TGrid;
+  Data: TList<TCompressionEntity>);
+begin
+  inherited Create;
+  fGrid := Grid;
+  fData := Data;
+end;
+
+procedure TRLEWriter.TPatternCompressor.Execute;
+var
+  CompGrid: TCompressedGrid;
+  CGItem: Int8;
+begin
+  fData.Clear;
+  CompGrid := TCompressedGrid.Create;
+  try
+    CompGrid.Compress(fGrid);
+    for CGItem in CompGrid.State do
+    begin
+      if IsItemAtTopOfList(CGItem) then
+        UpdateCount(CGItem)
+      else
+      begin
+        fData.Add(
+          TCompressionEntity.Create(
+            ValueToChar(CGItem),
+            CompressValueCount(CGItem))
+        );
+      end;
+    end;
+    if (fData.Count > 0) and (fData.Last.Tag = EOLTag) then
+      fData.Delete(Pred(fData.Count));
+  finally
+    CompGrid.Free;
+  end;
+end;
+
+function TRLEWriter.TPatternCompressor.IsItemAtTopOfList(
+  const Value: Int8): Boolean;
+begin
+  if fData.Count = 0 then
+    Exit(False);
+  Result := ValueToChar(Value) = fData.Last.Tag;
+end;
+
+procedure TRLEWriter.TPatternCompressor.UpdateCount(const Value: Int8);
+begin
+  Assert(fData.Count > 0);
+  fData[Pred(fData.Count)] := TCompressionEntity.Create(
+    fData.Last.Tag, fData.Last.Count + CompressValueCount(Value)
+  );
+end;
+
+function TRLEWriter.TPatternCompressor.ValueToChar(const Value: Int8): Char;
+begin
+  if Sign(Value) = NegativeValue then
+    Result := DeadTag
+  else if Sign(Value) = PositiveValue then
+    Result := AliveTag
+  else // ZeroValue
+    Result := EOLTag;
+end;
+
+{ TRLEWriter.TCompressionEntity }
+
+constructor TRLEWriter.TCompressionEntity.Create(ATag: Char; ACount: UInt16);
+begin
+  Assert(ACount > 0);
+  Tag := ATag;
+  Count := ACount;
+end;
+
+function TRLEWriter.TCompressionEntity.ToString: string;
+begin
+  if Count = 1 then
+    Result := Tag
+  else
+    Result := IntToStr(Count) + Tag;
+end;
+
 end.
+

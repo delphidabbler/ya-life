@@ -29,18 +29,24 @@ type
   end;
 
   // Test methods for class TRLEWriter
+  // NOTE: run these tests after those for TRLEReader because they use
+  // TRLEReader as part of tests
   TestTRLEWriter = class(TTestCase)
   strict private
     fWriter: TRLEWriter;
+    fPattern: TPattern;
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestWriteToStream;
   end;
 
 implementation
 
 uses
-  Dialogs;
+  Dialogs,
+  Engine.URules;
 
 const
   Pat20P2: array[0..10] of string = (
@@ -207,12 +213,143 @@ end;
 procedure TestTRLEWriter.SetUp;
 begin
   fWriter := TRLEWriter.Create;
+  fPattern := TPattern.Create;
 end;
 
 procedure TestTRLEWriter.TearDown;
 begin
+  fPattern.Free;
   fWriter.Free;
-  fWriter := nil;
+end;
+
+procedure TestTRLEWriter.TestWriteToStream;
+var
+  Stm: TStringStream;
+  Rule: TRule;
+  P: TPattern;
+  R: TRLEReader;
+  SL: TStringList;
+begin
+  P := nil;
+  R := nil;
+  SL := nil;
+  try
+    SL := TStringList.Create;
+    P := TPattern.Create;
+    R := TRLEReader.Create;
+
+    fPattern.Name := 'Suspendisse potenti. Maecenas nec est eros, non placerat '
+      + 'massa viverra fusce.'; // tests lines longer than RLE file max length
+    fPattern.Author := 'John Smith';
+    fPattern.Description.Add('Lorem ipsum dolor sit amet.');
+    fPattern.Description.Add( // tests wrapping of long lines
+      'Cras erat sem, lacinia et ornare id, volutpat id lacus. Vestibulum eu.'
+    );
+    fPattern.Origin := poCentreOffset;
+    fPattern.Offset := Point(-12, -7);
+    Rule := TRule.Create('B245/S67');
+    try
+      fPattern.Rule := Rule;
+    finally
+      Rule.Free;
+    end;
+    fPattern.Grid.Size := TSizeEx.Create(8, 11);
+    SetupGrid(fPattern.Grid, Pat20P2);
+    Stm := TStringStream.Create('', TEncoding.Default);
+    try
+      fWriter.SaveToStream(fPattern, Stm);
+      Stm.Position := 0;
+      R.LoadFromStream(P, Stm);
+      Stm.Position := 0;
+      SL.LoadFromStream(Stm, TEncoding.Default);
+
+      CheckTrue(P.Grid.IsEqual(fPattern.Grid), 'Test 1 Grid');
+      CheckEquals(
+        'Suspendisse potenti. Maecenas nec est eros, non placerat massa v...',
+        P.Name,
+        'Test 1 Name'
+      );
+      CheckEquals('John Smith', P.Author, 'Test 1 Author');
+      CheckEquals(3, P.Description.Count, 'Test 1 Description.Count');
+      CheckEquals(
+        'Lorem ipsum dolor sit amet.', P.Description[0], 'Test 1 Description[0]'
+      );
+      CheckEquals(
+        'Cras erat sem, lacinia et ornare id, volutpat id lacus. Vestibulum',
+        P.Description[1], 'Test 1 Description[1]'
+      );
+      CheckEquals(
+        'eu.', P.Description[2], 'Test 1 Description[2]'
+      );
+      CheckEquals(Ord(poCentreOffset), Ord(P.Origin), 'Test 1 Origin');
+      CheckEquals(-12, P.Offset.X, 'Test 1 Offset.X');
+      CheckEquals(-7, P.Offset.Y, 'Test 1 Offset.Y');
+      CheckEquals(8, P.Grid.Size.CX, 'Test 1 Grid.Size.CX');
+      CheckEquals(11, P.Grid.Size.CY, 'Test 1 Grid.Size.CY');
+      CheckEquals('B245/S67', P.Rule.ToBSString, 'Test 1 Rule');
+
+      CheckEquals(
+        '#N '
+        + 'Suspendisse potenti. Maecenas nec est eros, non placerat massa v...',
+        SL[0], 'Test 1 #N'
+      );
+      CheckEquals('#O John Smith', SL[1], 'Test 1 #O');
+      CheckEquals('#C Lorem ipsum dolor sit amet.', SL[2], 'Test 1 #C 1');
+      CheckEquals(
+        '#C Cras erat sem, lacinia et ornare id, volutpat id lacus. Vestibulum',
+        SL[3], 'Test 1 C 2'
+      );
+      CheckEquals('#C eu.', SL[4], 'Test 1 #C 4');
+      CheckEquals('#R -12 -7', SL[5], 'Test 1 #P');
+      CheckEquals(
+        'x = 8, y = 11, rule = 67/245', SL[6], 'Test 1 Header line'
+      );
+    finally
+      Stm.Free;
+    end;
+
+    fPattern.Name := 'Quasar';
+    fPattern.Author := 'Robert Wainwright';
+    fPattern.Description.Clear;   // no description
+    fPattern.Origin := poCentre;  // no offset
+    fPattern.Rule := nil;         // no rule
+    fPattern.Grid.Size := TSizeEx.Create(29, 29);
+    SetupGrid(fPattern.Grid, PatQuasar);
+    Stm := TStringStream.Create('', TEncoding.Default);
+    try
+      fWriter.SaveToStream(fPattern, Stm);
+      Stm.Position := 0;
+      R.LoadFromStream(P, Stm);
+      Stm.Position := 0;
+      SL.LoadFromStream(Stm, TEncoding.Default);
+
+      ShowMessage(Stm.DataString);
+      
+      CheckTrue(P.Grid.IsEqual(fPattern.Grid), 'Test 2 Grid');
+      CheckEquals(P.Name, 'Quasar', 'Test 2 Name');
+      CheckEquals(P.Author, 'Robert Wainwright', 'Test 2 Author');
+      CheckEquals(0, P.Description.Count, 'Test 2 Description.Count');
+      CheckEquals(Ord(poCentre), Ord(P.Origin), 'Test 2 Origin');
+      CheckEquals(29, P.Grid.Size.CX, 'Test 2 Grid.Size.CX');
+      CheckEquals(29, P.Grid.Size.CY, 'Test 2 Grid.Size.CY');
+      CheckEquals('B3/S23', P.Rule.ToBSString, 'Test 2 Rule');
+
+      CheckEquals(
+        '#N Quasar', SL[0], 'Test 2 #N'
+      );
+      CheckEquals('#O Robert Wainwright', SL[1], 'Test 2 #O');
+      CheckEquals(
+        'x = 29, y = 29', SL[2], 'Test 2 Header line'
+      );
+    finally
+      Stm.Free;
+    end;
+
+  finally
+    R.Free;
+    P.Free;
+    SL.Free;
+  end;
 end;
 
 initialization
