@@ -45,7 +45,6 @@ type
 implementation
 
 uses
-  Dialogs,
   Engine.URules;
 
 const
@@ -112,6 +111,16 @@ begin
     for X := 0 to Pred(G.Size.CX) do
       if Pat[Y, X+1] = '1' then
         G[X, Y] := csOn;
+end;
+
+function CheckLineLengths(Lines: TStrings): Boolean;
+var
+  Line: string;
+begin
+  for Line in Lines do
+    if Length(Line) > 70 then
+      Exit(False); // 70 is max length of RLE file line
+  Result := True;
 end;
 
 { TestTRLEReader }
@@ -238,6 +247,7 @@ begin
     P := TPattern.Create;
     R := TRLEReader.Create;
 
+    // Test with 20P2 pattern: should have single patter line
     fPattern.Name := 'Suspendisse potenti. Maecenas nec est eros, non placerat '
       + 'massa viverra fusce.'; // tests lines longer than RLE file max length
     fPattern.Author := 'John Smith';
@@ -262,7 +272,7 @@ begin
       R.LoadFromStream(P, Stm);
       Stm.Position := 0;
       SL.LoadFromStream(Stm, TEncoding.Default);
-
+      // test reloaded pattern for correct properties
       CheckTrue(P.Grid.IsEqual(fPattern.Grid), 'Test 1 Grid');
       CheckEquals(
         'Suspendisse potenti. Maecenas nec est eros, non placerat massa v...',
@@ -287,7 +297,8 @@ begin
       CheckEquals(8, P.Grid.Size.CX, 'Test 1 Grid.Size.CX');
       CheckEquals(11, P.Grid.Size.CY, 'Test 1 Grid.Size.CY');
       CheckEquals('B245/S67', P.Rule.ToBSString, 'Test 1 Rule');
-
+      // check hash lines and header line from generated stream
+      CheckTrue(CheckLineLengths(SL));
       CheckEquals(
         '#N '
         + 'Suspendisse potenti. Maecenas nec est eros, non placerat massa v...',
@@ -308,6 +319,7 @@ begin
       Stm.Free;
     end;
 
+    // Test with Quasar pattern: will result in wrapper pattern lines
     fPattern.Name := 'Quasar';
     fPattern.Author := 'Robert Wainwright';
     fPattern.Description.Clear;   // no description
@@ -322,9 +334,7 @@ begin
       R.LoadFromStream(P, Stm);
       Stm.Position := 0;
       SL.LoadFromStream(Stm, TEncoding.Default);
-
-      ShowMessage(Stm.DataString);
-      
+      // test re-loaded pattern for corrected properties
       CheckTrue(P.Grid.IsEqual(fPattern.Grid), 'Test 2 Grid');
       CheckEquals(P.Name, 'Quasar', 'Test 2 Name');
       CheckEquals(P.Author, 'Robert Wainwright', 'Test 2 Author');
@@ -333,7 +343,8 @@ begin
       CheckEquals(29, P.Grid.Size.CX, 'Test 2 Grid.Size.CX');
       CheckEquals(29, P.Grid.Size.CY, 'Test 2 Grid.Size.CY');
       CheckEquals('B3/S23', P.Rule.ToBSString, 'Test 2 Rule');
-
+      // check hash lines and header line from generated stream
+      CheckTrue(CheckLineLengths(SL));
       CheckEquals(
         '#N Quasar', SL[0], 'Test 2 #N'
       );
