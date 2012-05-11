@@ -33,7 +33,9 @@ uses
   TestPattern in 'TestPattern.pas',
   Filters.URLE in '..\..\..\Src\Filters.URLE.pas',
   UComparers in '..\..\..\Src\UComparers.pas',
-  TestRLEFilter in 'TestRLEFilter.pas';
+  TestRLEFilter in 'TestRLEFilter.pas',
+  Filters.UPlainText in '..\..\..\Src\Filters.UPlainText.pas',
+  TestPlainTextFilter in 'TestPlainTextFilter.pas';
 
 {$R *.RES}
 

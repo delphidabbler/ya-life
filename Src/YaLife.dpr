@@ -13,7 +13,8 @@ uses
   UStructs in 'UStructs.pas',
   Engine.UPattern in 'Engine.UPattern.pas',
   UComparers in 'UComparers.pas',
-  Filters.URLE in 'Filters.URLE.pas';
+  Filters.URLE in 'Filters.URLE.pas',
+  Filters.UPlainText in 'Filters.UPlainText.pas';
 
 {$Resource Resources.res}
 {$Resource Version.res}
