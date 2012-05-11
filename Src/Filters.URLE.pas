@@ -524,6 +524,7 @@ begin
   fPattern.Author := '';          // No author unless #O specified
   fPattern.Description.Clear;     // No description without #C/#c or after !
   fPattern.Origin := poCentre;    // No offset unless #R specified in file
+  fPattern.Grid.Initialise;       // In case parsing fails
 end;
 
 procedure TRLEReader.SkipEmptyLines(var Idx: Integer);
