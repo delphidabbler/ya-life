@@ -368,13 +368,19 @@
       <h1>Ya-Life</h1>
       <p>
         This is the native file format for YaLife. It is encoded in UTF-8 with
-        byte order mark. There is no restriction on the length of any line.
+        byte order mark. End of line is denoted by any of CR, LF or CRLF. There
+        is no restriction on the length of any line.
       </p>
       <p>
-        A YaLife file is in two parts, a meta-data section followed by the
-        pattern data section. Blank lines may occur anywhere in the file and
-        are ignored.
+        A YaLife file is in three parts, a header that identifies the file
+        format, a meta-data section followed by the pattern data. Blank lines
+        may occur anywhere in the file and are ignored.
       </p>
+      <h2>Header</h2>
+      <p>
+        The first line of the file identifies its type. It is always:
+      </p>
+      <pre class="indent">== ya-life 1 ==</pre>
       <h2>Meta data</h2>
       <p>
         The file begins with one or more meta data commands, each of which
