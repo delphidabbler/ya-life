@@ -59,6 +59,9 @@
         <li>
           <a href="#plaintext">Plaintext</a>
         </li>
+        <li>
+          <a href="#ya-life">Ya-Life</a>
+        </li>
       </ul>
     </section>
 
@@ -359,6 +362,139 @@
         Any trailing &quot;off&quot; cells may be omitted from a line. Blank
         rows are indicated by blank lines.
       </p>
+    </section>
+
+    <section id="ya-life">
+      <h1>Ya-Life</h1>
+      <p>
+        This is the native file format for YaLife. It is encoded in UTF-8 with
+        byte order mark. There is no restriction on the length of any line.
+      </p>
+      <p>
+        A YaLife file is in two parts, a meta-data section followed by the
+        pattern data section. Blank lines may occur anywhere in the file and
+        are ignored.
+      </p>
+      <h2>Meta data</h2>
+      <p>
+        The file begins with one or more meta data commands, each of which
+        occupies a line of text. All commands begin with an exclamation mark (!)
+        and are followed immediately by one or more spaces. The supported
+        commands are:
+      </p>
+      <dl>
+        <dt><kbd>!Name</kbd></dt>
+        <dd>
+          <div>The name of the pattern. For example:</div>
+          <pre class="indent">!Name My pattern</pre>
+        </dd>
+        <dt><kbd>!Author</kbd></dt>
+        <dd>
+          <div>The name of the pattern author. For example:</div>
+          <pre class="indent">!Author John Smith</pre>
+        </dd>
+<!--
+        <dt><kbd>!URL</kbd></dt>
+        <dd>
+          <div>The URL of any related web resource. For example:</div>
+          <pre class="indent">!URL http://www.example.com/my-pattern.html</pre>
+        </dd>
+        <dt><kbd>!Date</kbd></dt>
+        <dd>
+          <div>The date and (optionally) time that the pattern was created. This
+          may be the date the pattern was discovered or just the date the file
+          was saved. Dates should be in the format
+          <kbd>YYYY/MM/DD hh:mm:ss.ms</kbd>. The time component can be omitted.
+          The seconds / milliseconds component can also be omitted. Dates /
+          times should be in UTC / GMT. For example:
+          </div>
+          <pre class="indent">!Date 2012/05/14
+!Date 2012/05/14 15:09
+!Date 2012/05/14 15:09:37
+!Date 2012/05/14 15:09:37.56</pre>
+        </dd>
+-->
+        <dt><kbd>!Rule</kbd></dt>
+        <dd>
+          <div>Specifies the required rule in either S/B or B/S format. If the
+          Life program's current rule is to be used either the <kbd>!Rule</kbd>
+          command can be omitted or the value <kbd>default</kbd> can be used for
+          clarity. For example:</div>
+          <pre class="indent">!Rule 23/3
+!Rule B3/S23
+!Rule default</pre>
+        </dd>
+        <dt><kbd>!Size</kbd></dt>
+        <dd>
+          <div>Specifies the total size of the pattern(s) in the form
+          <kbd>width&nbsp;height</kbd>. No pattern data should exceed these
+          bounds. For example:</div>
+          <pre class="indent">!Size 24 39</pre>
+        </dd>
+        <dt><kbd>!</kbd></dt>
+        <dd>
+          <div><kbd>!</kbd> on its own, followed by at least one space is used
+          for descriptive comments. There may by any number of such comments.
+          Leading and trailing spaces are ignored. Empty comment lines are
+          ignored. Example:</div>
+          <pre class="indent">! Lorem ipsum dolor sit amet.
+!
+! Ut enim ad minim veniam.</pre>
+        </dd>
+      </dl>
+      <p>
+        Of these commands only <kbd>!Size</kbd> is compulsory.
+      </p>
+      <h2>Pattern Data</h2>
+      <p>
+        After the last command comes a list of pattern definitions. Each
+        definition occupies two lines. The first line specifies the offset of
+        the pattern from the top left hand corner of the grid, with the Y-axis
+        running downwards. The second line contains a run-length encoded
+        representation of the pattern. There must be at least one pattern
+        definition in the file.
+      </p>
+      <p>
+        The offset is specified by a space separated pair of non-negative
+        numbers followed by a new line.
+      </p>
+      <p>
+        The encoded cell data is a repeated sequence of items of the form
+        <kbd>&ltrun-count&gt;&lt;tag&gt;</kbd>.
+      </p>
+      <p>
+        <kbd>&lt;tag&gt;</kbd> is one of the following:
+      </p>
+      <dl>
+        <dt><kbd>.</kbd> (dot)</dt>
+        <dd>a dead cell</dd>
+        <dt><kbd>*</kbd> (asterisk)</dt>
+        <dd>a live cell</dd>
+        <dt><kbd>#</kbd></dt>
+        <dd>end of row marker</dd>
+      </dl>
+      <p>
+        <kbd>&ltrun-count&gt;</kbd> is the number of occurences of
+        <kbd>&lt;tag&gt;</kbd> in hexadecimal. If <kbd>&ltrun-count&gt;</kbd> is
+        one it is omitted.
+      </p>
+      <p>
+        Whitespace is not permitted anywhere in the
+        <kbd>&ltrun-count&gt;&lt;tag&gt;</kbd> sequence, all of which must be on
+        the same line.
+      </p>
+      <p>
+        End-of-row markers may be omitted from the end of the sequence.
+        Similarly dead cell sequences may be omitted before end-of-row markers
+        or the end of the sequence. This means that readers must assumes all
+        cells are dead by default.
+      </p>
+      <p>
+        Example pattern data:
+      </p>
+      <pre class="indent">10 12
+2.a5*.2*#a*3#.*</pre>
+      <p>
     </section>
 
     <footer>
