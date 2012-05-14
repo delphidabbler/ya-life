@@ -424,7 +424,7 @@ end;
 
 procedure TRLEReader.ParsePattern(const EncodedPattern: string);
 
-  procedure SetGrid(X, Y: UInt64; State: TCellState);
+  procedure SetGrid(X, Y: UInt16; State: TCellState);
   begin
     if X >= fPattern.Grid.Size.CX then
       raise ERLE.Create('X grid coordinate out of bounds');
