@@ -40,7 +40,7 @@ type
     procedure SaveToStream(const APattern: TPattern; const AStream: TStream);
   end;
 
-  ELife106 = class(Exception);
+  ELife106Filter = class(Exception);
 
 implementation
 
@@ -119,7 +119,7 @@ var
 begin
   SetDefaults;
   if (fLines.Count = 0) or not SameText(Trim(fLines[0]), '#Life 1.06') then
-    raise ELife106.Create('Not a Life 1.06 file');
+    raise ELife106Filter.Create('Not a Life 1.06 file');
   Coords := TList<TPoint>.Create;
   try
     ParseCoordinates(Coords);
@@ -137,13 +137,15 @@ var
   Coord: TPoint;
 begin
   if fLines.Count <= 1 then
-    raise ELife106.Create('No coordinates found');
+    raise ELife106Filter.Create('No coordinates found');
   // Coords begin immediately after header line
   for LineIdx := 1 to Pred(fLines.Count) do
   begin
     SplitStr(Trim(fLines[LineIdx]), ' ', XS, YS);
     if not TryStrToInt(XS, Coord.X) or not TryStrToInt(YS, Coord.Y) then
-      raise ELife106.CreateFmt('Invalid coordinates "%s"', [fLines[LineIdx]]);
+      raise ELife106Filter.CreateFmt(
+        'Invalid coordinates "%s"', [fLines[LineIdx]]
+      );
     Coords.Add(Coord);
   end;
 end;
@@ -240,3 +242,4 @@ begin
 end;
 
 end.
+

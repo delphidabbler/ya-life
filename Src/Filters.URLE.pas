@@ -88,7 +88,7 @@ type
     procedure SaveToStream(const APattern: TPattern; const AStream: TStream);
   end;
 
-  ERLE = class(Exception);
+  ERLEFilter = class(Exception);
 
 implementation
 
@@ -216,12 +216,12 @@ begin
     for Part in Parts do
     begin
       if Part = '' then
-        raise ERLE.CreateFmt('Invalid header line format "%s"', [Header]);
+        raise ERLEFilter.CreateFmt('Invalid header line format "%s"', [Header]);
       SplitStr(Part, '=', Name, Value);
       Name := Trim(Name);
       Value := Trim(Value);
       if (Name = '') or (Value = '') then
-        raise ERLE.CreateFmt('Invalid header line format "%s"', [Header]);
+        raise ERLEFilter.CreateFmt('Invalid header line format "%s"', [Header]);
       Data.Add(Name, Value);
     end;
   finally
@@ -229,13 +229,19 @@ begin
   end;
   // Check for correct keys
   if (Data.Count < 2) or (Data.Count > 3) then
-    raise ERLE.CreateFmt('Invalid header line format "%s"', [Header]);
+    raise ERLEFilter.CreateFmt('Invalid header line format "%s"', [Header]);
   if not Data.ContainsKey('x') then
-    raise ERLE.CreateFmt('Width not specified in header line "%s"', [Header]);
+    raise ERLEFilter.CreateFmt(
+      'Width not specified in header line "%s"', [Header]
+    );
   if not Data.ContainsKey('y') then
-    raise ERLE.CreateFmt('Height not specified in header line "%s"', [Header]);
+    raise ERLEFilter.CreateFmt(
+      'Height not specified in header line "%s"', [Header]
+    );
   if (Data.Count = 3) and not Data.ContainsKey('rule') then
-    raise ERLE.CreateFmt('Unknown specifier in header line "%s"', [Header]);
+    raise ERLEFilter.CreateFmt(
+      'Unknown specifier in header line "%s"', [Header]
+    );
 end;
 
 procedure TRLEReader.LoadFromFile(const APattern: TPattern;
@@ -278,7 +284,7 @@ var
 begin
   SetDefaults;
   if fLines.Count = 0 then
-    raise ERLE.Create('Empty file');
+    raise ERLEFilter.Create('Empty file');
   Idx := 0;
   SkipEmptyLines(Idx);
   ParseHashLines(Idx);  // skips over trailing blank lines
@@ -339,9 +345,9 @@ var
   Coord: TPoint;
 begin
   if S = '' then
-    raise ERLE.Create('No coordinates on #R hash line');
+    raise ERLEFilter.Create('No coordinates on #R hash line');
   if not ParseHashLineCoord(S, Coord) then
-    raise ERLE.Create('Invalid coordinates on #R hash line');
+    raise ERLEFilter.Create('Invalid coordinates on #R hash line');
   fPattern.Offset := Coord;
   fPattern.Origin := poCentreOffset;
 end;
@@ -349,7 +355,7 @@ end;
 procedure TRLEReader.ParseHashLineRule(const S: string);
 begin
   if not ParseRuleString(S) then
-    raise ERLE.CreateFmt('Invalid rule string "%s" on #r hash line', [S]);
+    raise ERLEFilter.CreateFmt('Invalid rule string "%s" on #r hash line', [S]);
 end;
 
 procedure TRLEReader.ParseHashLines(var Idx: Integer);
@@ -372,7 +378,7 @@ begin
     Inc(Idx);
     SplitStr(Line, ' ', Code, Content);
     if Length(Code) = 1 then
-      raise ERLE.CreateFmt(
+      raise ERLEFilter.CreateFmt(
         'No code letter provided on hash line "%s"', [Line]
       );
     Content := Trim(Content);
@@ -386,7 +392,9 @@ begin
       'R': ParseHashLineRelOffset(Content);
       'r': ParseHashLineRule(Content);
       else
-        raise ERLE.CreateFmt('Invalid hash line type: %s', ['#' + Line[2]]);
+        raise ERLEFilter.CreateFmt(
+          'Invalid hash line type: %s', ['#' + Line[2]]
+        );
     end;
   end;
 end;
@@ -398,7 +406,7 @@ var
   Size: TSizeEx;
 begin
   if Idx = fLines.Count then
-    raise ERLE.Create('Header line missing');
+    raise ERLEFilter.Create('Header line missing');
   Line := Trim(fLines[Idx]);
   Assert(Line <> '');
   Inc(Idx);
@@ -407,15 +415,21 @@ begin
     ExtractHeaderData(Line, Data);
 
     if not TryStrToInt(Data['x'], Size.CX) then
-      raise ERLE.CreateFmt('Invalid width in header line "%s"', [Line]);
+      raise ERLEFilter.CreateFmt(
+        'Invalid width in header line "%s"', [Line]
+      );
     if not TryStrToInt(Data['y'], Size.CY) then
-      raise ERLE.CreateFmt('Invalid height in header line "%s"', [Line]);
+      raise ERLEFilter.CreateFmt(
+        'Invalid height in header line "%s"', [Line]
+      );
     fPattern.Grid.Size := Size;
 
     if Data.ContainsKey('rule') then
     begin
       if not ParseRuleString(Data['rule']) then
-        raise ERLE.CreateFmt('Invalid rule string in header line "%s"', [Line]);
+        raise ERLEFilter.CreateFmt(
+          'Invalid rule string in header line "%s"', [Line]
+        );
     end;
   finally
     Data.Free;
@@ -427,9 +441,9 @@ procedure TRLEReader.ParsePattern(const EncodedPattern: string);
   procedure SetGrid(X, Y: UInt16; State: TCellState);
   begin
     if X >= fPattern.Grid.Size.CX then
-      raise ERLE.Create('X grid coordinate out of bounds');
+      raise ERLEFilter.Create('X grid coordinate out of bounds');
     if Y >= fPattern.Grid.Size.CY then
-      raise ERLE.Create('Y grid coordinate out of bounds');
+      raise ERLEFilter.Create('Y grid coordinate out of bounds');
     fPattern.Grid[X,Y] := State;
   end;
 
@@ -461,7 +475,7 @@ begin
         until (CharIdx > Length(EncodedPattern))
           or not CharInSet(EncodedPattern[CharIdx], ['0'..'9']);
         if not TryStrToInt(Digits, Count) then
-          raise ERLE.Create('Invalid run count');
+          raise ERLEFilter.Create('Invalid run count');
       end;
       DeadCell:
       begin
@@ -539,7 +553,7 @@ var
   SB: TStringBuilder;
 begin
   if Idx = fLines.Count then
-    raise ERLE.Create('Pattern lines missing');
+    raise ERLEFilter.Create('Pattern lines missing');
   SB := TStringBuilder.Create;
   try
     while Idx < fLines.Count do

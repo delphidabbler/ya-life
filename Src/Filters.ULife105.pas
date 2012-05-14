@@ -68,7 +68,7 @@ type
     procedure SaveToStream(const APattern: TPattern; const AStream: TStream);
   end;
 
-  ELife105 = class(Exception);
+  ELife105Filter = class(Exception);
 
 implementation
 
@@ -153,7 +153,7 @@ begin
   SetDefaults;
   fCellBlocks.Clear;
   if (fLines.Count = 0) or not SameText(Trim(fLines[0]), '#Life 1.05') then
-    raise ELife105.Create('Not a Life 1.05 file');
+    raise ELife105Filter.Create('Not a Life 1.05 file');
   LineIdx := 1;   // line after header
   while (LineIdx < fLines.Count) and not StartsStr('#P', fLines[LineIdx]) do
   begin
@@ -161,7 +161,7 @@ begin
     Inc(LineIdx);
   end;
   if LineIdx = fLines.Count then
-    raise ELife105.Create('No pattern data found');
+    raise ELife105Filter.Create('No pattern data found');
   ParseCellBlocks(LineIdx);
   UpdatePattern;
 end;
@@ -218,7 +218,9 @@ begin
   else if Trim(Line) = '' then
     // Do nothing: skipping blank line
   else
-    raise ELife105.CreateFmt('Invalid information line: "%s"', [Trim(Line)]);
+    raise ELife105Filter.CreateFmt(
+      'Invalid information line: "%s"', [Trim(Line)]
+    );
 end;
 
 function TLife105Reader.ParsePatternLine(const Line: string): TPoint;
@@ -229,7 +231,9 @@ begin
   CoordStr := Trim(RightStr(Line, Length(Line) - Length('#P')));
   SplitStr(CoordStr, ' ', XStr, YStr);
   if not TryStrToInt(XStr, Result.X) or not TryStrToInt(YStr, Result.Y) then
-    raise ELife105.CreateFmt('Invalid offset coordinates in line "%s"', [Line]);
+    raise ELife105Filter.CreateFmt(
+      'Invalid offset coordinates in line "%s"', [Line]
+    );
 end;
 
 procedure TLife105Reader.SetDefaults;
@@ -256,7 +260,7 @@ begin
     end;
   except
     on E: EConvertError do
-      raise ELife105.CreateFmt('Invalid rule string "%s"', [RuleStr]);
+      raise ELife105Filter.CreateFmt('Invalid rule string "%s"', [RuleStr]);
     on E: Exception do
       raise;
   end;
@@ -488,3 +492,4 @@ begin
 end;
 
 end.
+

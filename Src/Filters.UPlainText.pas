@@ -42,7 +42,7 @@ type
     procedure SaveToStream(const APattern: TPattern; const AStream: TStream);
   end;
 
-  EPlainText = class(Exception);
+  EPlainTextFilter = class(Exception);
 
 implementation
 
@@ -149,7 +149,7 @@ begin
   LineIdx := 0;
   ParseCommentLines(LineIdx);
   if LineIdx = fLines.Count then
-    raise EPlainText.Create('No pattern data found');
+    raise EPlainTextFilter.Create('No pattern data found');
   ParsePatternLines(LineIdx);
 end;
 
@@ -299,3 +299,4 @@ begin
 end;
 
 end.
+
