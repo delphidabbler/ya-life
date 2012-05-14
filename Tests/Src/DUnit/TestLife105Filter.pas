@@ -411,6 +411,7 @@ var
   Stm: TStringStream;
   Reader: TLife105Reader;
   P: TPattern;
+  I: Integer;
 begin
   fPattern.Grid.Size := TSizeEx.Create(15, 12);
   SetupGrid(fPattern.Grid, Pat2Fumaroles);
@@ -428,6 +429,8 @@ begin
     'Maecenas nec est eros non placerat. Cras erat sem, lacinia et ornare id, '
     + 'volutpat id lacus. Vestibulum eu.'
   );
+  for I := 5 to 24 do   // test for enforcement of max of 22 comment lines
+    fPattern.Description.Add('More description');
   P := nil;
   Reader := nil;
   Stm := TStringStream.Create('', TEncoding.ASCII);
@@ -438,7 +441,11 @@ begin
     Stm.Position := 0;
     Reader.LoadFromStream(P, Stm);
     CheckTrue(P.Grid.IsEqual(fPattern.Grid), 'Test 1: Grid');
-    CheckEquals(5, P.Description.Count, 'Test 1: Description.Count');
+    CheckEquals(22, P.Description.Count, 'Test 1: Description.Count');
+    CheckTrue(
+      fPattern.Description.Count + 2{for name & author} > P.Description.Count,
+      'Test 1: Max description lines'
+    );
     CheckEquals(
       'Name: Suspendisse potenti. Maecenas nec est eros, non placerat massa '
         + 'viver...',

@@ -48,14 +48,17 @@ type
   strict private
     const
       MaxLineLength = 80;
+      MaxCommentLines = 22;
   strict private
     var
       fPattern: TPattern;
       fLines: TStringList;
+      fCommentCount: Integer;
     procedure Generate;
     procedure GenerateCommentLines(const Comment: string);
     procedure GenerateRuleLine;
     procedure GeneratePatternLines;
+    procedure WriteCommentLine(const Line: string);
     procedure WriteLineRestricted(const Line: string);
   public
     constructor Create;
@@ -340,12 +343,13 @@ procedure TLife105Writer.Generate;
 var
   Comment: string;
 begin
+  fCommentCount := 0;
   fLines.Clear;
   fLines.Add('#Life 1.05');
   if Trim(fPattern.Name) <> '' then
-    WriteLineRestricted('#D Name: ' + Trim(fPattern.Name));
+    WriteCommentLine('Name: ' + Trim(fPattern.Name));
   if Trim(fPattern.Author) <> '' then
-    WriteLineRestricted('#D Author: ' + Trim(fPattern.Author));
+    WriteCommentLine('Author: ' + Trim(fPattern.Author));
   for Comment in fPattern.Description do
     GenerateCommentLines(Comment);
   GenerateRuleLine;
@@ -361,7 +365,7 @@ begin
   try
     Comments.Text := TextWrap(Trim(Comment), MaxLineLength - Length('#D '), 0);
     for Line in Comments do
-      WriteLineRestricted('#D ' + Line);
+      WriteCommentLine(Line);
   finally
     Comments.Free;
   end;
@@ -460,6 +464,16 @@ begin
   Bytes := TEncoding.ASCII.GetBytes(Trim(fLines.Text));
   if Length(Bytes) > 0 then
     AStream.WriteBuffer(Pointer(Bytes)^, Length(Bytes));
+end;
+
+procedure TLife105Writer.WriteCommentLine(const Line: string);
+begin
+  if Trim(Line) = '' then
+    Exit;
+  if fCommentCount = MaxCommentLines then
+    Exit;
+  WriteLineRestricted('#D ' + Trim(Line));
+  Inc(fCommentCount);
 end;
 
 procedure TLife105Writer.WriteLineRestricted(const Line: string);
