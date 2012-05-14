@@ -45,9 +45,6 @@ type
 
 implementation
 
-uses
-  Dialogs;
-
 const
   PatQuadPole: array[0..6] of string = (
     '1100000',
@@ -410,7 +407,6 @@ end;
 
 procedure TestTLife105Writer.TestSaveToStream;
 var
-  G: TGrid;
   Rule: TRule;
   Stm: TStringStream;
   Reader: TLife105Reader;
@@ -496,7 +492,6 @@ begin
     Reader := TLife105Reader.Create;
     P := TPattern.Create;
     fWriter.SaveToStream(fPattern, Stm);
-showmessage(Stm.DataString);
     Stm.Position := 0;
     Reader.LoadFromStream(P, Stm);
     CheckTrue(P.Grid.IsEqual(fPattern.Grid), 'Test 2: Grid');
