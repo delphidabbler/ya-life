@@ -37,7 +37,9 @@ uses
   Filters.UPlainText in '..\..\..\Src\Filters.UPlainText.pas',
   TestPlainTextFilter in 'TestPlainTextFilter.pas',
   Filters.ULife106 in '..\..\..\Src\Filters.ULife106.pas',
-  TestLife106Filter in 'TestLife106Filter.pas';
+  TestLife106Filter in 'TestLife106Filter.pas',
+  Filters.ULife105 in '..\..\..\Src\Filters.ULife105.pas',
+  TestLife105Filter in 'TestLife105Filter.pas';
 
 {$R *.RES}
 

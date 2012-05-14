@@ -15,7 +15,8 @@ uses
   UComparers in 'UComparers.pas',
   Filters.URLE in 'Filters.URLE.pas',
   Filters.UPlainText in 'Filters.UPlainText.pas',
-  Filters.ULife106 in 'Filters.ULife106.pas';
+  Filters.ULife106 in 'Filters.ULife106.pas',
+  Filters.ULife105 in 'Filters.ULife105.pas';
 
 {$Resource Resources.res}
 {$Resource Version.res}
