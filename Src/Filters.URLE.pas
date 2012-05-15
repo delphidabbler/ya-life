@@ -505,17 +505,10 @@ begin
 end;
 
 function TRLEReader.ParseRuleString(const RS: string): Boolean;
-var
-  Rule: TRule;
 begin
   try
-    Rule := TRule.Create(RS);
-    try
-      fPattern.Rule := Rule;
-      Result := True;
-    finally
-      Rule.Free;
-    end;
+    fPattern.Rule := TRule.Create(RS);
+    Result := True;
   except
     on E: EConvertError do
       Result := False;
@@ -525,15 +518,8 @@ begin
 end;
 
 procedure TRLEReader.SetDefaults;
-var
-  Rule: TRule;
 begin
-  Rule := TRule.Create([3], [2,3]);  // Conway if no rule specified in file
-  try
-    fPattern.Rule := Rule;
-  finally
-    Rule.Free;
-  end;
+  fPattern.Rule := TRule.Create([3], [2,3]);  // Conway life is default
   fPattern.Name := '';            // No name unless #N specified
   fPattern.Author := '';          // No author unless #O specified
   fPattern.Description.Clear;     // No description without #C/#c or after !
@@ -628,7 +614,7 @@ begin
   Line := Format(
     'x = %d, y = %d', [fPattern.Grid.Size.CX, fPattern.Grid.Size.CY]
   );
-  if Assigned(fPattern.Rule) then
+  if not fPattern.Rule.IsNull then
     Line := Line + ', rule = ' + fPattern.Rule.ToString;
   fLines.Add(Line);
 end;

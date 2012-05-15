@@ -83,7 +83,7 @@ implementation
 
 uses
   StrUtils, Math,
-  Engine.UCommon, UUtils;
+  Engine.UCommon, Engine.URules, UUtils;
 
 { TPlainTextReader }
 
@@ -197,12 +197,12 @@ end;
 
 procedure TPlainTextReader.SetDefaults;
 begin
-  fPattern.Rule := nil;           // No rule ever specified
-  fPattern.Name := '';            // No name unless !Name specified
-  fPattern.Author := '';          // No author unless !Author specified
-  fPattern.Description.Clear;     // No description without ! line
-  fPattern.Origin := poCentre;    // No offset ever specified
-  fPattern.Grid.Initialise;       // Just in case parsing fails
+  fPattern.Rule := TRule.CreateNull;  // No rule ever specified
+  fPattern.Name := '';                // No name unless !Name specified
+  fPattern.Author := '';              // No author unless !Author specified
+  fPattern.Description.Clear;         // No description without ! line
+  fPattern.Origin := poCentre;        // No offset ever specified
+  fPattern.Grid.Initialise;           // Just in case parsing fails
 end;
 
 { TPlainTextWriter }

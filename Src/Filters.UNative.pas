@@ -167,7 +167,7 @@ begin
       else if SameText('!Rule', Command) then
       begin
         if SameText('default', Value) then
-          fPattern.Rule := nil
+          fPattern.Rule := TRule.CreateNull
         else
           SetRule(Value);
       end
@@ -295,7 +295,7 @@ end;
 
 procedure TNativeReader.SetDefaults;
 begin
-  fPattern.Rule := nil;                       // Default rule is no rule
+  fPattern.Rule := TRule.CreateNull;          // Default rule is no rule
   fPattern.Name := '';                        // Empty unless !Name command
   fPattern.Author := '';                      // Empty unless !Author command
   fPattern.Description.Clear;                 // Empty unles ! command(s)
@@ -305,16 +305,9 @@ begin
 end;
 
 procedure TNativeReader.SetRule(const RuleStr: string);
-var
-  Rule: TRule;
 begin
   try
-    Rule := TRule.Create(RuleStr);
-    try
-      fPattern.Rule := Rule;
-    finally
-      Rule.Free;
-    end;
+    fPattern.Rule := TRule.Create(RuleStr);
   except
     on E: EConvertError do
       raise ENativeFilter.CreateFmt('Invalid rule string "%s"', [RuleStr]);
@@ -379,7 +372,7 @@ begin
   GenerateCommand('Author', fPattern.Author);
   for Desc in fPattern.Description do
     GenerateCommand('', Desc);
-  if Assigned(fPattern.Rule) then
+  if not fPattern.Rule.IsNull then
     GenerateCommand('Rule', fPattern.Rule.ToString)
   else
     GenerateCommand('Rule', 'default');

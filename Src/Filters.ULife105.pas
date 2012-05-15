@@ -238,7 +238,7 @@ end;
 
 procedure TLife105Reader.SetDefaults;
 begin
-  fPattern.Rule := nil;               // Default if no #R or #N lines
+  fPattern.Rule := TRule.CreateNull;  // Default if no #R or #N lines
   fPattern.Name := '';                // No name ever specified
   fPattern.Author := '';              // No author ever specified
   fPattern.Description.Clear;         // Default if no #D / #C lines
@@ -248,16 +248,9 @@ begin
 end;
 
 procedure TLife105Reader.SetRule(const RuleStr: string);
-var
-  Rule: TRule;
 begin
   try
-    Rule := TRule.Create(RuleStr);
-    try
-      fPattern.Rule := Rule;
-    finally
-      Rule.Free;
-    end;
+    fPattern.Rule := TRule.Create(RuleStr);
   except
     on E: EConvertError do
       raise ELife105Filter.CreateFmt('Invalid rule string "%s"', [RuleStr]);
@@ -434,8 +427,7 @@ end;
 
 procedure TLife105Writer.GenerateRuleLine;
 begin
-  // TODO: consider adding HasRule method to TPattern
-  if not Assigned(fPattern.Rule) then
+  if fPattern.Rule.IsNull then
     Exit;
   // TODO: consider adding IsConwayLife method to TRule
   if (fPattern.Rule.BirthCriteria = [3])

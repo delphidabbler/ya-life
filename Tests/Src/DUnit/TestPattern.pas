@@ -102,20 +102,13 @@ begin
 end;
 
 procedure TestTPattern.TestRuleProp;
-var
-  R: TRule;
 begin
-  CheckTrue(nil = fPattern.Rule, 'Test 1');
-  R := TRule.Create([2,3], [2]);
-  try
-    fPattern.Rule := R;
-    CheckTrue([2,3] = fPattern.Rule.BirthCriteria, 'Test 2 B');
-    CheckTrue([2] = fPattern.Rule.SurvivalCriteria, 'Test 2 S');
-  finally
-    R.Free;
-  end;
-  fPattern.Rule := nil;
-  CheckTrue(nil = fPattern.Rule, 'Test 3');
+  CheckTrue(fPattern.Rule.IsNull, 'Test 1');
+  fPattern.Rule := TRule.Create([2,3], [2]);
+  CheckTrue([2,3] = fPattern.Rule.BirthCriteria, 'Test 2 B');
+  CheckTrue([2] = fPattern.Rule.SurvivalCriteria, 'Test 2 S');
+  fPattern.Rule := TRule.CreateNull;
+  CheckTrue(fPattern.Rule.IsNull, 'Test 3');
 end;
 
 initialization

@@ -234,7 +234,6 @@ end;
 procedure TestTRLEWriter.TestWriteToStream;
 var
   Stm: TStringStream;
-  Rule: TRule;
   P: TPattern;
   R: TRLEReader;
   SL: TStringList;
@@ -257,12 +256,7 @@ begin
     );
     fPattern.Origin := poCentreOffset;
     fPattern.Offset := Point(-12, -7);
-    Rule := TRule.Create('B245/S67');
-    try
-      fPattern.Rule := Rule;
-    finally
-      Rule.Free;
-    end;
+    fPattern.Rule := TRule.Create('B245/S67');
     fPattern.Grid.Size := TSizeEx.Create(8, 11);
     SetupGrid(fPattern.Grid, Pat20P2);
     Stm := TStringStream.Create('', TEncoding.Default);
@@ -322,9 +316,9 @@ begin
     // Test with Quasar pattern: will result in wrapper pattern lines
     fPattern.Name := 'Quasar';
     fPattern.Author := 'Robert Wainwright';
-    fPattern.Description.Clear;   // no description
-    fPattern.Origin := poCentre;  // no offset
-    fPattern.Rule := nil;         // no rule
+    fPattern.Description.Clear;         // no description
+    fPattern.Origin := poCentre;        // no offset
+    fPattern.Rule := TRule.CreateNull;  // no rule
     fPattern.Grid.Size := TSizeEx.Create(29, 29);
     SetupGrid(fPattern.Grid, PatQuasar);
     Stm := TStringStream.Create('', TEncoding.Default);

@@ -62,7 +62,7 @@ constructor TPattern.Create;
 begin
   inherited Create;
   fGrid := TGrid.Create;
-  fRule := nil;
+  fRule := TRule.CreateNull;
   fOrigin := poCentre;
   fOffset := Point(0, 0);
   fDescription := TStringList.Create;
@@ -71,7 +71,6 @@ end;
 destructor TPattern.Destroy;
 begin
   fDescription.Free;
-  fRule.Free;
   fGrid.Free;
   inherited;
 end;
@@ -100,10 +99,7 @@ end;
 
 procedure TPattern.SetRule(const ARule: TRule);
 begin
-  // rule does not have to be assigned: nil implies "use current rule" in game
-  FreeAndNil(fRule);
-  if Assigned(ARule) then
-    fRule := TRule.Create(ARule);
+  fRule := ARule;
 end;
 
 end.

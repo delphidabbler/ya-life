@@ -111,8 +111,6 @@ begin
 end;
 
 procedure TestTPlainTextReader.SetUp;
-var
-  R: TRule;
 begin
   fReader := TPlainTextReader.Create;
   fPattern := TPattern.Create;
@@ -120,12 +118,7 @@ begin
   fPattern.Name := 'Pattern-42';
   fPattern.Author := 'John Smith';
   fPattern.Description.Add('Foo bar');
-  R := TRule.Create([2,3, 4], [5]);
-  try
-    fPattern.Rule := R;
-  finally
-    R.Free;
-  end;
+  fPattern.Rule := TRule.Create([2,3, 4], [5]);
 end;
 
 procedure TestTPlainTextReader.TearDown;
@@ -160,7 +153,7 @@ begin
       fPattern.Description[1],
       'Test 1 Description[1]'
     );
-    CheckFalse(Assigned(fPattern.Rule), 'Test 1 Rule');
+    CheckTrue(fPattern.Rule.IsNull, 'Test 1 Rule');
     CheckEquals(Ord(poCentre), Ord(fPattern.Origin), 'Test 1 Origin');
   finally
     G.Free;
@@ -177,7 +170,7 @@ begin
     CheckEquals('', fPattern.Name, 'Test 2 Name');
     CheckEquals('', fPattern.Author, 'Test 2 Author');
     CheckEquals(0, fPattern.Description.Count, 'Test 2 Description.Count');
-    CheckFalse(Assigned(fPattern.Rule), 'Test 2 Rule');
+    CheckTrue(fPattern.Rule.IsNull, 'Test 2 Rule');
     CheckEquals(Ord(poCentre), Ord(fPattern.Origin), 'Test 2 Origin');
   finally
     G.Free;

@@ -20,18 +20,21 @@ type
   TestTRule = class(TTestCase)
   strict private
     R1, R2, R3, R4, R5, R6: TRule;
+  private
+    procedure TestNulConstructor;
   public
     procedure SetUp; override;
     procedure TearDown; override;
   published
     procedure TestSetConstructor;
     procedure TestRuleStringConstructor;
-    procedure TestNulConstructor;
+    procedure TestCreateNul;
     procedure TestCloneConstructor;
     procedure TestApply;
     procedure TestToString;
     procedure TestToBSString;
     procedure TestIsEqual;
+    procedure TestIsNull;
   end;
 
 implementation
@@ -41,18 +44,13 @@ begin
   R1 := TRule.Create([3, 6, 7, 8], [3, 4, 6, 7, 8]);
   R2 := TRule.Create([2], []);
   R3 := TRule.Create([], [6, 4, 2]);
-  R4 := TRule.Create;
+  R4 := TRule.CreateNull;
   R5 := TRule.Create([3], [2, 3]);
   R6 := TRule.Create([3], [2, 3]);
 end;
 
 procedure TestTRule.TearDown;
 begin
-  R5.Free;
-  R4.Free;
-  R3.Free;
-  R2.Free;
-  R1.Free;
 end;
 
 procedure TestTRule.TestApply;
@@ -71,16 +69,22 @@ procedure TestTRule.TestCloneConstructor;
 var
   R1, R2: TRule;
 begin
-  R2 := nil;
+  R2 := TRule.CreateNull;
   R1 := TRule.Create([3,4,5], [6,7,8]);
-  try
-    R2 := TRule.Create(R1);
-    Check(R2.BirthCriteria = R1.BirthCriteria, 'Test a');
-    Check(R2.SurvivalCriteria = R2.SurvivalCriteria, 'Test b');
-  finally
-    R2.Free;
-    R1.Free;
-  end;
+  R2 := TRule.Create(R1);
+  Check(R2.BirthCriteria = R1.BirthCriteria, 'Test a');
+  Check(R2.SurvivalCriteria = R2.SurvivalCriteria, 'Test b');
+end;
+
+procedure TestTRule.TestCreateNul;
+var
+  R1, R2: TRule;
+begin
+  R2 := TRule.CreateNull;
+  R1 := TRule.Create([3,4,5], [6,7,8]);
+  R2 := TRule.Create(R1);
+  Check(R2.BirthCriteria = R1.BirthCriteria, 'Test a');
+  Check(R2.SurvivalCriteria = R2.SurvivalCriteria, 'Test b');
 end;
 
 procedure TestTRule.TestIsEqual;
@@ -91,17 +95,23 @@ begin
   CheckFalse(R5.IsEqual(R4), 'Test 4');
 end;
 
+procedure TestTRule.TestIsNull;
+var
+  R: TRule;
+begin
+  R := TRule.Create([3], [2, 3]);
+  CheckFalse(R.IsNull, 'Test 1');
+  R := TRule.CreateNull;
+  CheckTrue(R.IsNull, 'Test 2');
+end;
+
 procedure TestTRule.TestNulConstructor;
 var
   R: TRule;
 begin
-  R := TRule.Create;
-  try
-    Check(R.BirthCriteria = [], 'Test a');
-    Check(R.SurvivalCriteria = [], 'Test b');
-  finally
-    R.Free;
-  end;
+  R := TRule.CreateNull;
+  Check(R.BirthCriteria = [], 'Test a');
+  Check(R.SurvivalCriteria = [], 'Test b');
 end;
 
 procedure TestTRule.TestRuleStringConstructor;
@@ -109,82 +119,49 @@ var
   R: TRule;
 begin
   R := TRule.Create('23/3');
-  try
-    Check(R.BirthCriteria = [3], 'Test 1a');
-    Check(R.SurvivalCriteria = [2,3], 'Test 1b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [3], 'Test 1a');
+  Check(R.SurvivalCriteria = [2,3], 'Test 1b');
+
   R := TRule.Create('B3/S23');
-  try
-    Check(R.BirthCriteria = [3], 'Test 2a');
-    Check(R.SurvivalCriteria = [2,3], 'Test 2b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [3], 'Test 2a');
+  Check(R.SurvivalCriteria = [2,3], 'Test 2b');
+
   R := TRule.Create('');
-  try
-    Check(R.BirthCriteria = [], 'Test 3a');
-    Check(R.SurvivalCriteria = [], 'Test 3b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [], 'Test 3a');
+  Check(R.SurvivalCriteria = [], 'Test 3b');
+
   R := TRule.Create('546/');
-  try
-    Check(R.BirthCriteria = [], 'Test 4a');
-    Check(R.SurvivalCriteria = [4,5,6], 'Test 4b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [], 'Test 4a');
+  Check(R.SurvivalCriteria = [4,5,6], 'Test 4b');
+
   R := TRule.Create('546');
-  try
-    Check(R.BirthCriteria = [], 'Test 5a');
-    Check(R.SurvivalCriteria = [4,5,6], 'Test 5b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [], 'Test 5a');
+  Check(R.SurvivalCriteria = [4,5,6], 'Test 5b');
+
   R := TRule.Create('/546');
-  try
-    Check(R.BirthCriteria = [4,5,6], 'Test 6a');
-    Check(R.SurvivalCriteria = [], 'Test 6b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [4,5,6], 'Test 6a');
+  Check(R.SurvivalCriteria = [], 'Test 6b');
+
   R := TRule.Create('B0');
-  try
-    Check(R.BirthCriteria = [0], 'Test 7a');
-    Check(R.SurvivalCriteria = [], 'Test 7b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [0], 'Test 7a');
+  Check(R.SurvivalCriteria = [], 'Test 7b');
+
   R := TRule.Create('/');
-  try
-    Check(R.BirthCriteria = [], 'Test 8a');
-    Check(R.SurvivalCriteria = [], 'Test 8b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [], 'Test 8a');
+  Check(R.SurvivalCriteria = [], 'Test 8b');
+
   R := TRule.Create('B4/');
-  try
-    Check(R.BirthCriteria = [4], 'Test 9a');
-    Check(R.SurvivalCriteria = [], 'Test 9b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [4], 'Test 9a');
+  Check(R.SurvivalCriteria = [], 'Test 9b');
+
   R := TRule.Create('B/S12');
-  try
-    Check(R.BirthCriteria = [], 'Test 10a');
-    Check(R.SurvivalCriteria = [1, 2], 'Test 10b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [], 'Test 10a');
+  Check(R.SurvivalCriteria = [1, 2], 'Test 10b');
+
   R := TRule.Create('B42/S');
-  try
-    Check(R.BirthCriteria = [2, 4], 'Test 11a');
-    Check(R.SurvivalCriteria = [], 'Test 11b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [2, 4], 'Test 11a');
+  Check(R.SurvivalCriteria = [], 'Test 11b');
+
   try
     TRule.Create('B3S4');
     Fail('Test E1: Exception expected');
@@ -212,12 +189,8 @@ var
   R: TRule;
 begin
   R := TRule.Create([3], [2,3]);
-  try
-    Check(R.BirthCriteria = [3], 'Test 1a');
-    Check(R.SurvivalCriteria = [2,3], 'Test 1b');
-  finally
-    R.Free;
-  end;
+  Check(R.BirthCriteria = [3], 'Test 1a');
+  Check(R.SurvivalCriteria = [2,3], 'Test 1b');
 end;
 
 procedure TestTRule.TestToString;

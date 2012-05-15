@@ -354,7 +354,7 @@ begin
       'Test for overlapped patterns 0x0',
       fPattern.Description[0], 'Test 2: Description[0]'
     );
-    CheckFalse(Assigned(fPattern.Rule), 'Test 2: Rule');
+    CheckTrue(fPattern.Rule.IsNull, 'Test 2: Rule');
   finally
     G.Free;
   end;
@@ -375,7 +375,7 @@ begin
       'Test for overlapped patterns 3x4',
       fPattern.Description[0], 'Test 3: Description[0]'
     );
-    CheckFalse(Assigned(fPattern.Rule), 'Test 3: Rule');
+    CheckTrue(fPattern.Rule.IsNull, 'Test 3: Rule');
   finally
     G.Free;
   end;
@@ -395,7 +395,6 @@ end;
 
 procedure TestTLife105Writer.TestSaveToStream;
 var
-  Rule: TRule;
   Stm: TStringStream;
   Reader: TLife105Reader;
   P: TPattern;
@@ -403,12 +402,7 @@ var
 begin
   fPattern.Grid.Size := TSizeEx.Create(15, 12);
   SetupGrid(fPattern.Grid, Pat2Fumaroles);
-  Rule := TRule.Create([3], [2,3]);
-  try
-    fPattern.Rule := Rule;
-  finally
-    Rule.Free;
-  end;
+  fPattern.Rule := TRule.Create([3], [2,3]);
   fPattern.Name := 'Suspendisse potenti. Maecenas nec est eros, non placerat '
     + 'massa viverra fusce lacinia et ornare id.'; // tests longer max length
   fPattern.Author := 'Noam Elkies';
@@ -471,12 +465,7 @@ begin
   // Multi-part file: grid wider than 80 cols
   fPattern.Grid.Size := TSizeEx.Create(162, 17);
   SetupGrid(fPattern.Grid, PatWidePattern);
-  Rule := TRule.Create([1,2], [2,3]);
-  try
-    fPattern.Rule := Rule;
-  finally
-    Rule.Free;
-  end;
+  fPattern.Rule := TRule.Create([1,2], [2,3]);
   fPattern.Name := ''; // tests longer max length
   fPattern.Author := '';
   fPattern.Description.Clear;

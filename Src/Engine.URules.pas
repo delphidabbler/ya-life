@@ -9,7 +9,7 @@ type
   ///  <summary>Encapsulates rules for birth and survival of life-like cellular
   ///  automata.</summary>
   ///  <remarks>This class is invariant.</remarks>
-  TRule = class(TObject)
+  TRule = record
   strict private
     var
       fBirthCriteria: TNeighbourCounts;
@@ -28,9 +28,11 @@ type
     ///  <summary>Clone constructor: creates one rule that is a copy of another.
     ///  </summary>
     constructor Create(const ARule: TRule); overload;
-    ///  <summary>Constructs a null rule that has empty birth and survival
+    ///  <summary>Creates a null rule that has empty birth and survival
     ///  criteria.</summary>
-    constructor Create; overload;
+    class function CreateNull: TRule; static;
+    ///  <summary>Checks if this rule is null.</summary>
+    function IsNull: Boolean;
     ///  <summary>Checks if another rule is the same.</summary>
     function IsEqual(const ARule: TRule): Boolean;
     ///  <summary>Applies rule for given cell state and neighbour count and
@@ -39,7 +41,7 @@ type
       const Neighbours: TNeighbourCount): TCellState;
     ///  <summary>Returns rule as a string in the common S/B notation.
     ///  </summary>
-    function ToString: string; override;
+    function ToString: string;
     ///  <summary>Returns rule as a string in the alternative
     ///  "B"{list}/"S"{list} notation.</summary>
     function ToBSString: string;
@@ -75,9 +77,9 @@ begin
   end;
 end;
 
-constructor TRule.Create;
+class function TRule.CreateNull: TRule;
 begin
-  Create([], []);
+  Result := TRule.Create([], []);
 end;
 
 constructor TRule.Create(const ARule: TRule);
@@ -90,7 +92,6 @@ var
   Part1, Part2: string;
   BirthRuleString, SurvivalRuleString: string;
 begin
-  inherited Create;
   SplitStr(RuleString, '/', Part1, Part2);
   Part1 := Trim(Part1);
   Part2 := Trim(Part2);
@@ -118,7 +119,6 @@ end;
 constructor TRule.Create(const BirthCriteria, SurvivalCriteria:
   TNeighbourCounts);
 begin
-  inherited Create;
   fBirthCriteria := BirthCriteria;
   fSurvivalCriteria := SurvivalCriteria;
 end;
@@ -127,6 +127,11 @@ function TRule.IsEqual(const ARule: TRule): Boolean;
 begin
   Result := (fBirthCriteria = ARule.fBirthCriteria)
     and (fSurvivalCriteria = ARule.fSurvivalCriteria);
+end;
+
+function TRule.IsNull: Boolean;
+begin
+  Result := (fBirthCriteria = []) and (fSurvivalCriteria = []);
 end;
 
 function TRule.RuleSetToString(const RuleSet: TNeighbourCounts): string;

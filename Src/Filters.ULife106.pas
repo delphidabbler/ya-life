@@ -46,7 +46,7 @@ implementation
 
 uses
   Math,
-  Engine.UCommon, UUtils;
+  Engine.UCommon, Engine.URules, UUtils;
 
 { TLife106Reader }
 
@@ -152,7 +152,7 @@ end;
 
 procedure TLife106Reader.SetDefaults;
 begin
-  fPattern.Rule := nil;               // No rule ever specified
+  fPattern.Rule := TRule.CreateNull;  // No rule ever specified
   fPattern.Name := '';                // No name ever specified
   fPattern.Author := '';              // No author ever specified
   fPattern.Description.Clear;         // No description ever specified

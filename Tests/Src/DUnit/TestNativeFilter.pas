@@ -220,7 +220,7 @@ begin
         'Single pattern',
         fPattern.Description[1], 'Test 1: Description[1]'
       );
-      CheckFalse(Assigned(fPattern.Rule), 'Test 1: Rule');
+      CheckTrue(fPattern.Rule.IsNull, 'Test 1: Rule');
     finally
       G.Free;
     end;
@@ -267,7 +267,6 @@ procedure TestTNativeWriter.TestSaveToStream;
 var
   Stm: TStringStream;
   Lines: TStringList;
-  Rule: TRule;
 begin
   fPattern.Grid.Size := TestGridSize;
   SetupGrid(fPattern.Grid, TestGrid);
@@ -275,7 +274,7 @@ begin
   fPattern.Author := 'John Smith';
   fPattern.Description.Add('A test pattern');
   fPattern.Description.Add('Single pattern');
-  fPattern.Rule := nil;
+  fPattern.Rule := TRule.CreateNull;
   Stm := TStringStream.Create('', TEncoding.UTF8);
   try
     Lines := TStringList.Create;
@@ -298,12 +297,7 @@ begin
       );
       Stm.Size := 0;
       Lines.Clear;
-      Rule := TRule.Create('1357/1357');
-      try
-        fPattern.Rule := Rule;
-      finally
-        Rule.Free;
-      end;
+      fPattern.Rule := TRule.Create('1357/1357');
       fWriter.SaveToStream(fPattern, Stm);
       Stm.Position := 0;
       Lines.LoadFromStream(Stm, TEncoding.UTF8);
