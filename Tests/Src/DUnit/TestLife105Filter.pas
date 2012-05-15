@@ -237,18 +237,6 @@ begin
   end;
 end;
 
-// Produces grid in which roughly 50% of cells are alive.
-procedure RandomGrid(const G: TGrid);
-var
-  X, Y: Integer;
-begin
-  G.Initialise;
-  for X := 0 to Pred(G.Size.CX) do
-    for Y := 0 to Pred(G.Size.CY) do
-      if Odd(Random(2)) then
-        G[X, Y] := csOn;
-end;
-
 procedure TestTLife105Reader.SetUp;
 begin
   fReader := TLife105Reader.Create;
