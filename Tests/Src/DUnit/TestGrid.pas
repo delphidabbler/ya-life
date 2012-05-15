@@ -54,11 +54,11 @@ begin
   fGrid0 := TGrid.Create;
   fGrid0a := TGrid.Create;
   fGrid37x51 := TGrid.Create;
-  fGrid37x51.SetSize(TSizeEx.Create(37,51));
+  fGrid37x51.Size := TSizeEx.Create(37,51);
   fGrid37x51a := TGrid.Create;
-  fGrid37x51a.SetSize(TSizeEx.Create(37, 51));
+  fGrid37x51a.Size := TSizeEx.Create(37, 51);
   fGrid4x4 := TGrid.Create;
-  fGrid4x4.SetSize(TSizeEx.Create(4, 4));
+  fGrid4x4.Size := TSizeEx.Create(4, 4);
 end;
 
 procedure TestTGrid.TearDown;
