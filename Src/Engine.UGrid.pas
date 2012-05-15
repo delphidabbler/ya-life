@@ -30,13 +30,13 @@ type
       fRowCounts: array of UInt16;
       fColCounts: array of UInt16;
     procedure ChangeSize(const NewSize: TSizeEx);
-  public
-    constructor Create;
     procedure SetSize(const NewSize: TSizeEx);
     function GetState(X, Y: UInt16): TCellState;
     procedure SetState(X, Y: UInt16; NewState: TCellState);
     function GetStateByPt(const Pt: TPoint): TCellState;
     procedure SetStateByPt(const Pt: TPoint; NewState: TCellState);
+  public
+    constructor Create;
     function Origin: TPoint;
     function GridToUniverseCoord(const GridCoord: TPoint): TPoint;
     function UniverseToGridCoord(const UniverseCoord: TPoint): TPoint;
