@@ -39,7 +39,9 @@ uses
   Filters.ULife106 in '..\..\..\Src\Filters.ULife106.pas',
   TestLife106Filter in 'TestLife106Filter.pas',
   Filters.ULife105 in '..\..\..\Src\Filters.ULife105.pas',
-  TestLife105Filter in 'TestLife105Filter.pas';
+  TestLife105Filter in 'TestLife105Filter.pas',
+  Filters.UNative in '..\..\..\Src\Filters.UNative.pas',
+  TestNativeFilter in 'TestNativeFilter.pas';
 
 {$R *.RES}
 

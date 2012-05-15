@@ -50,6 +50,7 @@
 			<DCCReference Include="Filters.UPlainText.pas"/>
 			<DCCReference Include="Filters.ULife106.pas"/>
 			<DCCReference Include="Filters.ULife105.pas"/>
+			<DCCReference Include="Filters.UNative.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
