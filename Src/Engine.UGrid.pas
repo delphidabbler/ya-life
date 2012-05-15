@@ -27,6 +27,8 @@ type
       fSize: TSizeEx;
       fState: array of array of TCellState;
       fPopulation: UInt32;
+      fRowCounts: array of UInt16;
+      fColCounts: array of UInt16;
     procedure ChangeSize(const NewSize: TSizeEx);
   public
     constructor Create;
@@ -64,6 +66,8 @@ begin
   Assert(Assigned(AGrid));
   ChangeSize(AGrid.fSize);
   fPopulation := AGrid.fPopulation;
+  fColCounts := Copy(AGrid.fColCounts);
+  fRowCounts := Copy(AGrid.fRowCounts);
   for X := 0 to Pred(fSize.CX) do
     for Y := 0 to Pred(fSize.CY) do
       fState[X,Y] := AGrid.fState[X,Y];
@@ -73,6 +77,8 @@ procedure TGrid.ChangeSize(const NewSize: TSizeEx);
 begin
   fSize := NewSize;
   SetLength(fState, fSize.CX, fSize.CY);
+  SetLength(fColCounts, fSize.CX);
+  SetLength(fRowCounts, fSize.CY);
 end;
 
 constructor TGrid.Create;
@@ -108,6 +114,10 @@ begin
     for Y := 0 to Pred(fSize.CY) do
       fState[X, Y] := csOff;
   fPopulation := 0;
+  for X := 0 to Pred(fSize.CX) do
+    fColCounts[X] := 0;
+  for Y := 0 to Pred(fSize.CY) do
+    fRowCounts[Y] := 0;
 end;
 
 function TGrid.IsEqual(const AGrid: TGrid): Boolean;
@@ -134,93 +144,28 @@ end;
 function TGrid.PatternBounds: TPatternBounds;
 var
   BoundsRect: TRect;  // bounding rectangle built using approximations
-
-  // Following routines must be called in order: they build on each other
-
-  function FindLeftMost: Boolean;
-  var
-    X, Y: Integer;  // loops thru grid - optimisation related bug if UInt16
-  begin
-    for X := 0 to Pred(fSize.CX) do
-      for Y := 0 to Pred(fSize.CY) do
-        if fState[X,Y] = csOn then
-        begin
-          // found left-most
-          BoundsRect.Left := X;
-          // do estimates for others
-          BoundsRect.Right := X;  // right-most can be left of found X value
-          BoundsRect.Top := Y;    // topm-ost can't be lower than found Y value
-          BoundsRect.Bottom := Y; // bottom-most can't be above found Y value
-          Exit(True);
-        end;
-    Result := False;
-  end;
-
-  procedure FindRightMost;
-  var
-    X, Y: Integer;      // loops thru grid - optimisation related bug if UInt16
-    MinRight: Integer;  // minimum possible right value
-  begin
-    MinRight := BoundsRect.Right + 1;
-    for X := Pred(fSize.CX) downto MinRight do
-      for Y := 0 to Pred(fSize.CY) do
-        if fState[X,Y] = csOn then
-        begin
-          // found a better right-most
-          BoundsRect.Right := X;
-          // try to improve on estimates for top and bottom
-          BoundsRect.Top := Min(Y, BoundsRect.Top);
-          BoundsRect.Bottom := Max(Y, BoundsRect.Bottom);
-          Exit;
-        end;
-  end;
-
-  procedure FindTopMost;
-  var
-    X, Y: Integer;    // loops thru grid - optimisation related bug if UInt16
-    MaxTop: Integer;  // maximum possible top value
-  begin
-    MaxTop := BoundsRect.Top - 1;
-    for Y := 0 to MaxTop do
-      // We know there are no "On" cells to left of BoundsRect.Left or to right
-      // of BoundsRects.Right.
-      for X := BoundsRect.Left to BoundsRect.Right do
-        if fState[X,Y] = csOn then
-        begin
-          // found a better top-most
-          BoundsRect.Top := Y;
-          Exit;
-        end;
-  end;
-
-  procedure FindBottomMost;
-  var
-    X, Y: Integer;      // loops thru grid - optimisation related bug if UInt16
-    MinBottom: Integer; // minimum possible bottom value
-  begin
-    MinBottom := BoundsRect.Bottom + 1;
-    for Y := Pred(fSize.CY) downto MinBottom do
-      // We know there are no "On" cells to left of BoundsRect.Left or to right
-      // of BoundsRects.Right.
-      for X := BoundsRect.Left to BoundsRect.Right do
-        if fState[X,Y] = csOn then
-        begin
-          // found a better bottom-most
-          BoundsRect.Bottom := Y;
-          Exit;
-        end;
-  end;
-
 begin
-  BoundsRect := Rect(fSize.CX, fSize.CY, -1, -1); // worst approximation
-  if not FindLeftMost then
+  BoundsRect.Left := 0;
+  while (BoundsRect.Left < fSize.CX)
+    and (fColCounts[BoundsRect.Left] = 0) do
+    Inc(BoundsRect.Left);
+  if BoundsRect.Left = fSize.CX then
   begin
     Result := TPatternBounds.CreateEmpty;
     Exit;
   end;
-  FindRightMost;
-  FindTopMost;
-  FindBottomMost;
+  BoundsRect.Right := Pred(fSize.CX);
+  while (BoundsRect.Right > BoundsRect.Left)
+    and (fColCounts[BoundsRect.Right] = 0) do
+    Dec(BoundsRect.Right);
+  BoundsRect.Top := 0;
+  while (BoundsRect.Top < fSize.CY)
+    and (fRowCounts[BoundsRect.Top] = 0) do
+    Inc(BoundsRect.Top);
+  BoundsRect.Bottom := Pred(fSize.CY);
+  while (BoundsRect.Bottom > BoundsRect.Top)
+    and (fRowCounts[BoundsRect.Bottom] = 0) do
+    Dec(BoundsRect.Bottom);
   Result := TPatternBounds.Create(BoundsRect);
 end;
 
@@ -243,10 +188,18 @@ begin
   case NewState of
     csOn:
       if fState[X, Y] = csOff then
+      begin
         Inc(fPopulation);
+        Inc(fColCounts[X]);
+        Inc(fRowCounts[Y]);
+      end;
     csOff:
       if fState[X, Y] = csOn then
+      begin
         Dec(fPopulation);
+        Dec(fColCounts[X]);
+        Dec(fRowCounts[Y]);
+      end;
   end;
   fState[X, Y] := NewState;
 end;
