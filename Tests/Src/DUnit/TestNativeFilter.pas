@@ -185,8 +185,8 @@ begin
     CheckTrue(G.IsEqual(fPattern.Grid), 'Test 1: Grid');
     CheckEquals('QuadPole', fPattern.Name, 'Test 1: Name');
     CheckEquals(1, fPattern.Description.Count, 'Test 1: Description.Count');
-    CheckEquals(
-      'The barberpole of length 4 and thus a period 2 oscillator.',
+    CheckEquals(  // contains non-ASCII characters
+      'The barberpole of length 4 '#$2013#$203A' a period 2 oscillator.',
       fPattern.Description[0], 'Test 1: Description[0]'
     );
     CheckEquals('1357/1357', fPattern.Rule.ToString, 'Test 1: Rule');
