@@ -121,6 +121,19 @@ begin
 end;
 
 function TGrid.IsEqual(const AGrid: TGrid): Boolean;
+
+  function EqualCountArrays(const A1, A2: array of UInt16): Boolean;
+  var
+    I: Integer;
+  begin
+    if Length(A1) <> Length(A2) then
+      Exit(False);
+    for I := Low(A1) to High(A1) do
+      if A1[I] <> A2[I] then
+        Exit(False);
+    Result := True;
+  end;
+
 var
   X, Y: Integer;
 begin
@@ -133,6 +146,9 @@ begin
   Result := True;
   // Populations should match: they redundant information so not tested above
   Assert(fPopulation = AGrid.fPopulation);
+  // Similarly row and column live cell counts
+  Assert(EqualCountArrays(fColCounts, AGrid.fColCounts));
+  Assert(EqualCountArrays(fRowCounts, AGrid.fRowCounts));
 end;
 
 function TGrid.Origin: TPoint;
