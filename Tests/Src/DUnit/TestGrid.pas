@@ -219,6 +219,7 @@ end;
 procedure TestTGrid.TestPatternBounds;
 var
   B: TPatternBounds;
+  X, Y: UInt16;
 begin
   fGrid37x51.Initialise;
   B := fGrid37x51.PatternBounds;
@@ -364,6 +365,17 @@ begin
   CheckEquals(1, B.TopLeft.Y, 'Test 16 y');
   CheckEquals(2, B.Size.CX, 'Test 16 cx');
   CheckEquals(2, B.Size.CY, 'Test 16 cy');
+
+  fGrid37x51.Initialise;
+  for X := 0 to Pred(fGrid37x51.Size.CX) do
+    for Y := 0 to Pred(fGrid37x51.Size.CY) do
+      fGrid37x51[X,Y] := csOn;
+  B := fGrid37x51.PatternBounds;
+  CheckEquals(0, B.TopLeft.X, 'Test 17 x');
+  CheckEquals(0, B.TopLeft.Y, 'Test 17 y');
+  CheckEquals(37, B.Size.CX, 'Test 17 cx');
+  CheckEquals(51, B.Size.CY, 'Test 17 cy');
+
 end;
 
 procedure TestTGrid.TestPopulation;
