@@ -20,8 +20,6 @@ type
   TestTRule = class(TTestCase)
   strict private
     R1, R2, R3, R4, R5, R6: TRule;
-  private
-    procedure TestNulConstructor;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -103,15 +101,6 @@ begin
   CheckFalse(R.IsNull, 'Test 1');
   R := TRule.CreateNull;
   CheckTrue(R.IsNull, 'Test 2');
-end;
-
-procedure TestTRule.TestNulConstructor;
-var
-  R: TRule;
-begin
-  R := TRule.CreateNull;
-  Check(R.BirthCriteria = [], 'Test a');
-  Check(R.SurvivalCriteria = [], 'Test b');
 end;
 
 procedure TestTRule.TestRuleStringConstructor;
