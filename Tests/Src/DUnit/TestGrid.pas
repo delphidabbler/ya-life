@@ -34,9 +34,113 @@ type
     procedure TestOrigin;
     procedure TestGridToUniverseCoord;
     procedure TestUniverseToGridCoord;
+    procedure TestOverlay;
+    procedure TestOverlayCentred;
   end;
 
 implementation
+
+const
+  // grids use for testing TGrid.Overlay and TGrid.OverlayCentre.
+  BaseGrid: array[0..6] of string = (
+    '....................',
+    '.......OOOOOO.......',
+    '......OO....OO......',
+    '.....OO..OO..OO.....',
+    '......OO....OO......',
+    '.......OOOOOO.......',
+    '....................'
+  );
+  BaseGridSize: TSizeEx = (CX: 20; CY: 7);
+
+  OvlGrid: array[0..2] of string = (
+    '..OOOO..',
+    'O.OOOO.O',
+    '...OO...'
+  );
+  OvlGridSize: TSizeEx = (CX: 8; CY: 3);
+
+  LargeOvlGrid: array[0..6] of string = (
+    'O..................O',
+    '.O................O.',
+    '..O..............O..',
+    '...OOOOOOOOOOOOOO...',
+    '..O..............O..',
+    '.O................O.',
+    'O..................O'
+  );
+  LargeOvlGridSize: TSizeEx = (CX: 20; CY: 7);
+
+  LargeGridMerge:array[0..6] of string = (
+    'O..................O',
+    '.O.....OOOOOO.....O.',
+    '..O...OO....OO...O..',
+    '...OOOOOOOOOOOOOO...',
+    '..O...OO....OO...O..',
+    '.O.....OOOOOO.....O.',
+    'O..................O'
+  );
+
+  LargeGridOverwrite: array[0..6] of string = (
+    'O..................O',
+    '.O................O.',
+    '..O..............O..',
+    '...OOOOOOOOOOOOOO...',
+    '..O..............O..',
+    '.O................O.',
+    'O..................O'
+  );
+
+  GridMergeCentre: array[0..6] of string = (
+    '....................',
+    '.......OOOOOO.......',
+    '......OOOOOOOO......',
+    '.....OO.OOOO.OO.....',
+    '......OO.OO.OO......',
+    '.......OOOOOO.......',
+    '....................'
+  );
+
+  GridOverwriteCentre: array [0..6] of string = (
+    '....................',
+    '.......OOOOOO.......',
+    '........OOOO........',
+    '.....OO.OOOO.OO.....',
+    '.........OO.........',
+    '.......OOOOOO.......',
+    '....................'
+  );
+
+  GridMergeOffset2x2: array [0..6] of string = (
+    '....................',
+    '.......OOOOOO.......',
+    '....OOOO....OO......',
+    '..O.OOOO.OO..OO.....',
+    '.....OOO....OO......',
+    '.......OOOOOO.......',
+    '....................'
+  );
+
+  GridOverwriteOffset1x3: array [0..6] of string = (
+    '....................',
+    '.......OOOOOO.......',
+    '......OO....OO......',
+    '...OOOO..OO..OO.....',
+    '.O.OOOO.O...OO......',
+    '....OO...OOOO.......',
+    '....................'
+  );
+
+procedure SetupGrid(const G: TGrid; Pat: array of string);
+var
+  X, Y: Integer;
+begin
+  G.Initialise;
+  for Y := 0 to Pred(G.Size.CY) do
+    for X := 0 to Pred(G.Size.CX) do
+      if Pat[Y, X+1] = 'O' then
+        G[X, Y] := csOn;
+end;
 
 function TestTGrid.IsZero(G: TGrid): Boolean;
 var
@@ -213,6 +317,99 @@ begin
     CheckEquals(0, O.Y, 'Test 8 Y');
   finally
     G.Free;
+  end;
+end;
+
+procedure TestTGrid.TestOverlay;
+var
+  G, GOvl, GTest: TGrid;
+begin
+  G := nil;
+  GOvl := nil;
+  GTest := nil;
+  try
+    G := TGrid.Create;
+    GOvl := TGrid.Create;
+    GTest := TGrid.Create;
+
+    G.Size := BaseGridSize;
+    GTest.Size := BaseGridSize;
+
+    GOvl.Size := OvlGridSize;
+    SetupGrid(GOvl, OvlGrid);
+
+    SetupGrid(G, BaseGrid);
+    SetupGrid(GTest, GridMergeOffset2x2);
+    G.Overlay(GOvl, osMerge, Point(2, 2));
+    CheckTrue(GTest.IsEqual(G), 'Test Merge 2x2');
+
+    SetupGrid(G, BaseGrid);
+    SetupGrid(GTest, GridOverwriteOffset1x3);
+    G.Overlay(GOvl, osOverwrite, Point(1, 3));
+    CheckTrue(GTest.IsEqual(G), 'Test Overwrite 1x3');
+
+    GOvl.Size := LargeOvlGridSize;
+    SetupGrid(GOvl, LargeOvlGrid);
+
+    SetupGrid(G, BaseGrid);
+    SetupGrid(GTest, LargeGridMerge);
+    G.Overlay(GOvl, osMerge, Point(0, 0));
+    CheckTrue(GTest.IsEqual(G), 'Test Merge 0x0');
+
+    SetupGrid(G, BaseGrid);
+    SetupGrid(GTest, LargeGridOverwrite);
+    G.Overlay(GOvl, osOverwrite); // tests overload without offset => (0, 0)
+    CheckTrue(GTest.IsEqual(G), 'Test Overwrite 0x0');
+  finally
+    G.Free;
+    GOvl.Free;
+    GTest.Free;
+  end;
+end;
+
+procedure TestTGrid.TestOverlayCentred;
+var
+  G, GOvl, GTest: TGrid;
+begin
+  G := nil;
+  GOvl := nil;
+  GTest := nil;
+  try
+    G := TGrid.Create;
+    GOvl := TGrid.Create;
+    GTest := TGrid.Create;
+    G.Size := BaseGridSize;
+    GTest.Size := BaseGridSize;
+
+    GOvl.Size := OvlGridSize;
+    SetupGrid(GOvl, OvlGrid);
+
+    SetupGrid(G, BaseGrid);
+    SetupGrid(GTest, GridMergeCentre);
+    G.OverlayCentred(GOvl, osMerge);
+    CheckTrue(GTest.IsEqual(G), 'Test Merge');
+
+    SetupGrid(G, BaseGrid);
+    SetupGrid(GTest, GridOverwriteCentre);
+    G.OverlayCentred(GOvl, osOverwrite);
+    CheckTrue(GTest.IsEqual(G), 'Test Overwrite');
+
+    GOvl.Size := LargeOvlGridSize;
+    SetupGrid(GOvl, LargeOvlGrid);
+
+    SetupGrid(G, BaseGrid);
+    SetupGrid(GTest, LargeGridMerge);
+    G.OverlayCentred(GOvl, osMerge);
+    CheckTrue(GTest.IsEqual(G), 'Test Merge Large');
+
+    SetupGrid(G, BaseGrid);
+    SetupGrid(GTest, LargeGridOverwrite);
+    G.OverlayCentred(GOvl, osOverwrite);
+    CheckTrue(GTest.IsEqual(G), 'Test Overwrite Large');
+  finally
+    G.Free;
+    GOvl.Free;
+    GTest.Free;
   end;
 end;
 

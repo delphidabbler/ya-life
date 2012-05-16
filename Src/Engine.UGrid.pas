@@ -21,6 +21,9 @@ type
   end;
 
 type
+  TGridOverlayStyle = (osMerge, osOverwrite);
+
+type
   TGrid = class(TObject)
   strict private
     var
@@ -43,6 +46,12 @@ type
     procedure Initialise;
     function IsEqual(const AGrid: TGrid): Boolean;
     procedure Assign(const AGrid: TGrid);
+    procedure OverlayCentred(const OvlGrid: TGrid;
+      const Style: TGridOverlayStyle);
+    procedure Overlay(const OvlGrid: TGrid; const Style: TGridOverlayStyle;
+      const Offset: TPoint); overload;
+    procedure Overlay(const OvlGrid: TGrid; const Style: TGridOverlayStyle);
+      overload;
     function Population: UInt32;
     function PatternBounds: TPatternBounds;
     property State[X, Y: UInt16]: TCellState read GetState write SetState;
@@ -155,6 +164,53 @@ function TGrid.Origin: TPoint;
 begin
   Assert(not Size.IsZero);
   Result := Point(fSize.CX div 2, fSize.CY div 2);
+end;
+
+procedure TGrid.Overlay(const OvlGrid: TGrid; const Style: TGridOverlayStyle;
+  const Offset: TPoint);
+var
+  X, Y: Integer;
+begin
+  if OvlGrid.Size.IsZero then
+    Exit;
+  Assert((Offset.X >= 0) and (Offset.Y >= 0));
+  Assert(OvlGrid.fSize.CX + Offset.X <= fSize.CX);
+  Assert(OvlGrid.fSize.CY + Offset.Y <= fSize.CY);
+  for X := 0 to Pred(OvlGrid.Size.CX) do
+  begin
+    for Y := 0 to Pred(OvlGrid.Size.CY) do
+    begin
+      case Style of
+        osMerge:
+          if OvlGrid[X, Y] = csOn then
+            SetState(X + Offset.X, Y + Offset.Y, csOn);
+        osOverwrite:
+          SetState(X + Offset.X, Y + Offset.Y, OvlGrid.GetState(X, Y));
+      end;
+    end;
+  end;
+end;
+
+procedure TGrid.Overlay(const OvlGrid: TGrid; const Style: TGridOverlayStyle);
+begin
+  Overlay(OvlGrid, Style, Point(0, 0));
+end;
+
+procedure TGrid.OverlayCentred(const OvlGrid: TGrid;
+  const Style: TGridOverlayStyle);
+var
+  RelOffset: TPoint;
+  AbsOffset: TPoint;
+begin
+  if OvlGrid.Size.IsZero then
+    Exit;
+  RelOffset := OvlGrid.GridToUniverseCoord(Point(0, 0));
+  AbsOffset := Self.UniverseToGridCoord(RelOffset);
+  if AbsOffset.X < 0 then
+    AbsOffset.X := 0;
+  if AbsOffset.Y < 0 then
+    AbsOffset.Y := 0;
+  Overlay(OvlGrid, Style, AbsOffset);
 end;
 
 function TGrid.PatternBounds: TPatternBounds;
