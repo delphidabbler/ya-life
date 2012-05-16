@@ -112,24 +112,6 @@ const
   );
   QuadPoleGridSize: TSizeEx = (CX: 7; CY: 7);
 
-function GridToStr(const G: TGrid): string;
-var
-  X, Y: Integer;
-begin
-  Result := '';
-  for Y := 0 to Pred(G.Size.CY) do
-  begin
-    for X := 0 to Pred(G.Size.CX) do
-    begin
-      if G[X,Y] = csOn then
-        Result := Result + '1'
-      else
-        Result := Result + '0';
-    end;
-    Result := Result + #13#10;
-  end;
-end;
-
 procedure SetupGrid(const G: TGrid; Pat: array of string);
 var
   X, Y: Integer;
